@@ -355,7 +355,7 @@ module "ecs_app_heart_beat" {
   #source = "git::https://github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_app.git?ref=1.0.0"
   source             = "git::https://github.com/nexient-llc/tf-aws-wrapper_module-ecs_appmesh_app.git?ref=0.1.0"
   naming_prefix      = "${var.instance_env}-${var.instance_resource}-hb"
-  environment        = var.class_env
+  environment        = var.env_class
   region             = var.region
   environment_number = var.instance_env
   resource_number    = var.instance_resource

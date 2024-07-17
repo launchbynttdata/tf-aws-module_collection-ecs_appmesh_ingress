@@ -43,17 +43,16 @@ locals {
     resource_name = module.resource_names["alb_tg"].standard
   } })]
 
-  # Need to construct the alb_dns_records as a list of object (alias A record)
-  alb_dns_records = [
-    {
-      name = module.resource_names["alb"].standard
+  # Need to construct the alb_dns_records as a map of object (alias A record)
+  alb_dns_records = {
+    (module.resource_names["alb"].standard) = {
       type = "A"
       alias = {
         name    = module.alb.lb_dns_name
         zone_id = module.alb.lb_zone_id
       }
     }
-  ]
+  }
 
   # ACM cert doesnt allow first domain name > 64 chars. Hence, add a SAN for the standard name of ALB in-case the actual ALB name > 32 characters and a shortened name is used for ALB
   # We still would like to use the standard name in the custom A-record
@@ -61,7 +60,7 @@ locals {
 
   # ACM first domain name must be < 64 characters
   actual_domain_name  = "${module.resource_names["virtual_gateway"].standard}.${var.namespace_name}"
-  updated_domain_name = length(local.actual_domain_name) < 64 ? local.actual_domain_name : "${var.naming_prefix}-vsvc.${var.namespace_name}"
+  updated_domain_name = length(local.actual_domain_name) < 64 ? local.actual_domain_name : "${var.logical_product_family}-${var.logical_product_service}.${var.namespace_name}"
   private_cert_san    = local.actual_domain_name != local.updated_domain_name ? [local.actual_domain_name] : []
 
   # Role policies

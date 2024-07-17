@@ -30,7 +30,7 @@ module "vpc" {
 }
 
 module "ecs_platform" {
-  source = "git::https://github.com/nexient-llc/tf-aws-wrapper_module-ecs_appmesh_platform.git?ref=0.1.0"
+  source = "git::https://github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_platform.git?ref=1.0.0"
 
   vpc_id          = module.vpc.vpc_id
   private_subnets = module.vpc.private_subnets
@@ -39,12 +39,11 @@ module "ecs_platform" {
   interface_vpc_endpoints = var.interface_vpc_endpoints
   route_table_ids         = concat([module.vpc.default_route_table_id], module.vpc.private_route_table_ids)
 
-  naming_prefix              = local.naming_prefix
   vpce_security_group        = var.vpce_security_group
   region                     = var.region
-  environment                = var.environment
-  environment_number         = var.environment_number
-  resource_number            = var.resource_number
+  environment                = var.class_env
+  environment_number         = var.instance_env
+  resource_number            = var.instance_resource
   container_insights_enabled = true
 
   namespace_name        = local.namespace_name
@@ -58,11 +57,10 @@ module "ecs_platform" {
 module "ecs_ingress" {
   source = "../.."
 
-  naming_prefix      = local.ingress_naming_prefix
-  environment        = var.environment
-  region             = var.region
-  environment_number = var.environment_number
-  resource_number    = var.resource_number
+  region            = var.region
+  class_env         = var.class_env
+  instance_env      = var.instance_env
+  instance_resource = var.instance_resource
 
   vpc_id          = module.vpc.vpc_id
   private_subnets = module.vpc.private_subnets

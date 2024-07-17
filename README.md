@@ -1,4 +1,4 @@
-# tf-aws-wrapper_module-ecs_appmesh_ingress
+# tf-aws-module_collection-ecs_appmesh_ingress
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC_BY--NC--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
@@ -187,21 +187,21 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.58.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | git::https://github.com/nexient-llc/tf-module-resource_name.git | 0.1.0 |
+| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | git::https://github.com/launchbynttdata/tf-launch-module_library-resource_name.git | 1.0.1 |
 | <a name="module_sg_alb"></a> [sg\_alb](#module\_sg\_alb) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
 | <a name="module_alb_logs_s3"></a> [alb\_logs\_s3](#module\_alb\_logs\_s3) | terraform-aws-modules/s3-bucket/aws | ~> 3.8.2 |
 | <a name="module_alb"></a> [alb](#module\_alb) | terraform-aws-modules/alb/aws | ~> 8.0 |
-| <a name="module_alb_dns_record"></a> [alb\_dns\_record](#module\_alb\_dns\_record) | git::https://github.com/nexient-llc/tf-aws-module-dns_record.git | 0.1.0 |
+| <a name="module_alb_dns_record"></a> [alb\_dns\_record](#module\_alb\_dns\_record) | git::https://github.com/launchbynttdata/tf-aws-module_primitive-dns_record | n/a |
 | <a name="module_acm"></a> [acm](#module\_acm) | terraform-aws-modules/acm/aws | ~> 4.3.2 |
-| <a name="module_sds"></a> [sds](#module\_sds) | git::https://github.com/nexient-llc/tf-aws-module-service_discovery_service.git | 0.1.0 |
-| <a name="module_private_certs"></a> [private\_certs](#module\_private\_certs) | git::https://github.com/nexient-llc/tf-aws-module-acm_private_cert.git | 0.1.0 |
-| <a name="module_virtual_gateway"></a> [virtual\_gateway](#module\_virtual\_gateway) | git::https://github.com/nexient-llc/tf-aws-module-appmesh_virtual_gateway.git | 0.1.0 |
+| <a name="module_sds"></a> [sds](#module\_sds) | git::https://github.com/launchbynttdata/tf-aws-module_primitive-service_discovery_service.git | 1.0.0 |
+| <a name="module_private_certs"></a> [private\_certs](#module\_private\_certs) | git::https://github.com/launchbynttdata/tf-aws-module_primitive-acm_private_cert.git | 1.0.0 |
+| <a name="module_virtual_gateway"></a> [virtual\_gateway](#module\_virtual\_gateway) | git::https://github.com/launchbynttdata/tf-aws-module_primitive-virtual_gateway.git | 1.0.1 |
 | <a name="module_ecs_task_execution_policy"></a> [ecs\_task\_execution\_policy](#module\_ecs\_task\_execution\_policy) | cloudposse/iam-policy/aws | ~> 0.4.0 |
 | <a name="module_ecs_task_policy"></a> [ecs\_task\_policy](#module\_ecs\_task\_policy) | cloudposse/iam-policy/aws | ~> 0.4.0 |
 | <a name="module_virtual_gateway_container_definition"></a> [virtual\_gateway\_container\_definition](#module\_virtual\_gateway\_container\_definition) | git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git | tags/0.59.0 |
@@ -220,12 +220,13 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_naming_prefix"></a> [naming\_prefix](#input\_naming\_prefix) | Prefix for the provisioned resources. | `string` | `"platform"` | no |
-| <a name="input_environment"></a> [environment](#input\_environment) | Environment in which the resource should be provisioned like dev, qa, prod etc. | `string` | `"dev"` | no |
-| <a name="input_environment_number"></a> [environment\_number](#input\_environment\_number) | The environment count for the respective environment. Defaults to 000. Increments in value of 1 | `string` | `"000"` | no |
-| <a name="input_resource_number"></a> [resource\_number](#input\_resource\_number) | The resource count for the respective resource. Defaults to 000. Increments in value of 1 | `string` | `"000"` | no |
+| <a name="input_logical_product_family"></a> [logical\_product\_family](#input\_logical\_product\_family) | (Required) Name of the product family for which the resource is created.<br>    Example: org\_name, department\_name. | `string` | `"launch"` | no |
+| <a name="input_logical_product_service"></a> [logical\_product\_service](#input\_logical\_product\_service) | (Required) Name of the product service for which the resource is created.<br>    For example, backend, frontend, middleware etc. | `string` | `"backend"` | no |
+| <a name="input_class_env"></a> [class\_env](#input\_class\_env) | (Required) Environment where resource is going to be deployed. For example. dev, qa, uat | `string` | `"dev"` | no |
+| <a name="input_instance_env"></a> [instance\_env](#input\_instance\_env) | Number that represents the instance of the environment. | `number` | `0` | no |
+| <a name="input_instance_resource"></a> [instance\_resource](#input\_instance\_resource) | Number that represents the instance of the resource. | `number` | `0` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS Region in which the infra needs to be provisioned | `string` | `"us-east-2"` | no |
-| <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | A map of key to resource\_name that will be used by tf-module-resource\_name to generate resource names | <pre>map(object(<br>    {<br>      name       = string<br>      max_length = optional(number, 60)<br>    }<br>  ))</pre> | <pre>{<br>  "acm": {<br>    "max_length": 60,<br>    "name": "acm"<br>  },<br>  "alb": {<br>    "max_length": 32,<br>    "name": "alb"<br>  },<br>  "alb_sg": {<br>    "max_length": 60,<br>    "name": "alb-sg"<br>  },<br>  "alb_tg": {<br>    "max_length": 60,<br>    "name": "albtg"<br>  },<br>  "health_check_app_ecs_sg": {<br>    "max_length": 60,<br>    "name": "hc-app-sg"<br>  },<br>  "health_check_ecs_app": {<br>    "max_length": 60,<br>    "name": "hc-svc"<br>  },<br>  "health_check_ecs_td": {<br>    "max_length": 60,<br>    "name": "hc-td"<br>  },<br>  "s3_logs": {<br>    "max_length": 60,<br>    "name": "alblogs"<br>  },<br>  "sds_vg": {<br>    "max_length": 60,<br>    "name": "sds-vg"<br>  },<br>  "task_exec_policy": {<br>    "max_length": 60,<br>    "name": "exec-plcy"<br>  },<br>  "task_policy": {<br>    "max_length": 60,<br>    "name": "task-plcy"<br>  },<br>  "vgw_ecs_app": {<br>    "max_length": 60,<br>    "name": "vgw-svc"<br>  },<br>  "vgw_ecs_sg": {<br>    "max_length": 60,<br>    "name": "vgw-sg"<br>  },<br>  "vgw_ecs_td": {<br>    "max_length": 60,<br>    "name": "vgw-td"<br>  },<br>  "virtual_gateway": {<br>    "max_length": 60,<br>    "name": "vgw"<br>  }<br>}</pre> | no |
+| <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | A map of key to resource\_name that will be used by tf-launch-module\_library-resource\_name to generate resource names | <pre>map(object(<br>    {<br>      name       = string<br>      max_length = optional(number, 60)<br>    }<br>  ))</pre> | <pre>{<br>  "acm": {<br>    "max_length": 60,<br>    "name": "acm"<br>  },<br>  "alb": {<br>    "max_length": 32,<br>    "name": "alb"<br>  },<br>  "alb_sg": {<br>    "max_length": 60,<br>    "name": "alb-sg"<br>  },<br>  "alb_tg": {<br>    "max_length": 60,<br>    "name": "albtg"<br>  },<br>  "health_check_app_ecs_sg": {<br>    "max_length": 60,<br>    "name": "hc-app-sg"<br>  },<br>  "health_check_ecs_app": {<br>    "max_length": 60,<br>    "name": "hc-svc"<br>  },<br>  "health_check_ecs_td": {<br>    "max_length": 60,<br>    "name": "hc-td"<br>  },<br>  "s3_logs": {<br>    "max_length": 60,<br>    "name": "alblogs"<br>  },<br>  "sds_vg": {<br>    "max_length": 60,<br>    "name": "sds-vg"<br>  },<br>  "task_exec_policy": {<br>    "max_length": 60,<br>    "name": "exec-plcy"<br>  },<br>  "task_policy": {<br>    "max_length": 60,<br>    "name": "task-plcy"<br>  },<br>  "vgw_ecs_app": {<br>    "max_length": 60,<br>    "name": "vgw-svc"<br>  },<br>  "vgw_ecs_sg": {<br>    "max_length": 60,<br>    "name": "vgw-sg"<br>  },<br>  "vgw_ecs_td": {<br>    "max_length": 60,<br>    "name": "vgw-td"<br>  },<br>  "virtual_gateway": {<br>    "max_length": 60,<br>    "name": "vgw"<br>  }<br>}</pre> | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The VPC ID of the VPC where infrastructure will be provisioned | `string` | n/a | yes |
 | <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | List of private subnets | `list(string)` | n/a | yes |
 | <a name="input_public_subnets"></a> [public\_subnets](#input\_public\_subnets) | List of public subnets | `list(string)` | `[]` | no |
@@ -238,8 +239,9 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="input_is_internal"></a> [is\_internal](#input\_is\_internal) | Whether this load balancer is internal or public facing | `bool` | `true` | no |
 | <a name="input_alb_sg"></a> [alb\_sg](#input\_alb\_sg) | Security Group for the ALB. https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/rules.tf | <pre>object({<br>    description              = optional(string)<br>    ingress_rules            = optional(list(string))<br>    ingress_cidr_blocks      = optional(list(string))<br>    egress_rules             = optional(list(string))<br>    egress_cidr_blocks       = optional(list(string))<br>    ingress_with_cidr_blocks = optional(list(map(string)))<br>    egress_with_cidr_blocks  = optional(list(map(string)))<br>  })</pre> | n/a | yes |
 | <a name="input_target_groups"></a> [target\_groups](#input\_target\_groups) | List of target groups for the ALB"<br>    `target_type` can be ip, instance<br>    `health_check` must be set for backend\_protocol=HTTPS.<br>    Valid health\_check attributes are healthy\_threshold, unhealthy\_threshold, path, port, protocol<br>      - protocol must be HTTP, HTTPS etc. | <pre>list(object({<br>    # Need to use name_prefix instead of name as the lifecycle property create_before_destroy is set<br>    name_prefix      = optional(string, "albtg-")<br>    backend_protocol = optional(string)<br>    backend_port     = optional(number)<br>    target_type      = optional(string)<br>    health_check     = optional(map(string), {})<br>  }))</pre> | n/a | yes |
+| <a name="input_dns_zone_id"></a> [dns\_zone\_id](#input\_dns\_zone\_id) | Zone ID of the hosted zonee | `string` | `null` | no |
 | <a name="input_subject_alternate_names"></a> [subject\_alternate\_names](#input\_subject\_alternate\_names) | Additional domain names to be added to the certificate created for ALB. Domain names must be FQDN. | `list(string)` | `[]` | no |
-| <a name="input_dns_zone_name"></a> [dns\_zone\_name](#input\_dns\_zone\_name) | Name of the  Route53 DNS Zone where custom DNS records will be created. Required if use\_https\_listeners=true | `string` | `""` | no |
+| <a name="input_dns_zone_name"></a> [dns\_zone\_name](#input\_dns\_zone\_name) | Name of the Route53 DNS Zone where custom DNS records will be created. Required if use\_https\_listeners=true | `string` | `""` | no |
 | <a name="input_private_zone"></a> [private\_zone](#input\_private\_zone) | Whether the dns\_zone\_name provided above is a private or public hosted zone. Required if dns\_zone\_name is not empty | `string` | `""` | no |
 | <a name="input_idle_timeout"></a> [idle\_timeout](#input\_idle\_timeout) | The time in seconds that the connection is allowed to be idle. | `number` | `60` | no |
 | <a name="input_alb_logs_bucket_id"></a> [alb\_logs\_bucket\_id](#input\_alb\_logs\_bucket\_id) | S3 bucket ID for ALB logs | `string` | `""` | no |
