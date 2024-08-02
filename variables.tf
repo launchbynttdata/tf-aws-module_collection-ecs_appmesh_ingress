@@ -75,6 +75,7 @@ variable "instance_resource" {
 }
 
 variable "region" {
+  type        = string
   description = "AWS Region in which the infra needs to be provisioned"
   default     = "us-east-2"
 }
@@ -89,15 +90,15 @@ variable "resource_names_map" {
   ))
   default = {
     alb_sg = {
-      name       = "alb-sg"
+      name       = "albsg"
       max_length = 60
     }
     vgw_ecs_sg = {
-      name       = "vgw-sg"
+      name       = "vgwsg"
       max_length = 60
     }
     health_check_app_ecs_sg = {
-      name       = "hc-app-sg"
+      name       = "hcappsg"
       max_length = 60
     }
     alb = {
@@ -113,7 +114,7 @@ variable "resource_names_map" {
       max_length = 60
     }
     sds_vg = {
-      name       = "sds-vg"
+      name       = "sdsvg"
       max_length = 60
     }
     s3_logs = {
@@ -125,27 +126,27 @@ variable "resource_names_map" {
       max_length = 60
     }
     task_exec_policy = {
-      name       = "exec-plcy"
+      name       = "execplcy"
       max_length = 60
     }
     task_policy = {
-      name       = "task-plcy"
+      name       = "taskplcy"
       max_length = 60
     }
     vgw_ecs_app = {
-      name       = "vgw-svc"
+      name       = "vgwsvc"
       max_length = 60
     }
     health_check_ecs_app = {
-      name       = "hc-svc"
+      name       = "hcsvc"
       max_length = 60
     }
     vgw_ecs_td = {
-      name       = "vgw-td"
+      name       = "vgwtd"
       max_length = 60
     }
     health_check_ecs_td = {
-      name       = "hc-td"
+      name       = "hctd"
       max_length = 60
     }
   }
@@ -160,12 +161,6 @@ variable "vpc_id" {
 variable "private_subnets" {
   description = "List of private subnets"
   type        = list(string)
-}
-
-variable "public_subnets" {
-  description = "List of public subnets"
-  type        = list(string)
-  default     = []
 }
 
 variable "vgw_security_group" {
@@ -233,6 +228,11 @@ variable "alb_sg" {
   })
 }
 
+variable "zone_id" {
+  description = "Zone ID of the hosted zonee"
+  type        = string
+}
+
 variable "target_groups" {
   description = <<EOT
     List of target groups for the ALB"
@@ -249,12 +249,6 @@ variable "target_groups" {
     target_type      = optional(string)
     health_check     = optional(map(string), {})
   }))
-}
-
-variable "dns_zone_id" {
-  description = "Zone ID of the hosted zonee"
-  type        = string
-  default     = null
 }
 
 variable "subject_alternate_names" {
@@ -425,11 +419,13 @@ variable "ignore_changes_desired_count" {
 }
 
 variable "task_cpu" {
+  type        = number
   description = "Amount of CPU to be allocated to the task"
   default     = 512
 }
 
 variable "task_memory" {
+  type        = number
   description = "Amount of Memory to be allocated to the task"
   default     = 1024
 }
@@ -483,11 +479,13 @@ variable "force_new_deployment" {
 
 ## health check application related variables
 variable "app_task_cpu" {
+  type        = number
   description = "Amount of CPU to be allocated to the health check app task"
   default     = 512
 }
 
 variable "app_task_memory" {
+  type        = number
   description = "Amount of Memory to be allocated to the health check app task"
   default     = 1024
 }

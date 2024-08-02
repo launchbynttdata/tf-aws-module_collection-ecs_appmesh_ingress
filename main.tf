@@ -10,12 +10,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-data "aws_vpc" "vpc" {
-  id = var.vpc_id
-}
-
 module "resource_names" {
-  source = "git::https://github.com/launchbynttdata/tf-launch-module_library-resource_name.git?ref=1.0.1"
+  source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
+  version = "~> 1.0"
 
   for_each = var.resource_names_map
 
@@ -130,9 +127,10 @@ module "alb" {
 }
 
 module "alb_dns_record" {
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-dns_record"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/dns_record/aws"
+  version = "~> 1.0.0"
 
-  zone_id = var.dns_zone_id
+  zone_id = var.zone_id
   records = local.alb_dns_records
 }
 
@@ -142,6 +140,7 @@ data "aws_route53_zone" "dns_zone" {
 
   name         = var.dns_zone_name
   private_zone = var.private_zone
+  zone_id      = var.zone_id
 }
 
 # Certificate Manager where the certs for ALB will be provisioned
@@ -161,7 +160,8 @@ module "acm" {
 
 # Service Discovery services for Virtual Gateway
 module "sds" {
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-service_discovery_service.git?ref=1.0.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws"
+  version = "~> 1.0.0"
 
   name         = module.resource_names["virtual_gateway"].standard
   namespace_id = var.namespace_id
@@ -171,7 +171,8 @@ module "sds" {
 
 # Create private certificates for virtual gateway
 module "private_certs" {
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-acm_private_cert.git?ref=1.0.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws"
+  version = "~> 1.0.0"
 
   private_ca_arn = var.private_ca_arn
   # Must be < 64
@@ -182,7 +183,8 @@ module "private_certs" {
 }
 
 module "virtual_gateway" {
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-virtual_gateway.git?ref=1.0.1"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_gateway/aws"
+  version = "~> 1.0.0"
 
   name      = module.resource_names["virtual_gateway"].standard
   mesh_name = var.app_mesh_id
@@ -351,14 +353,18 @@ module "virtual_gateway_ecs_service" {
 
 # This module will provision a simple HTTP server as an ECS app used for Health Check (`/health`) for the Ingress Virtual Gateway
 module "ecs_app_heart_beat" {
-  #TODO: Update once the app has been  migrated
-  #source = "git::https://github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_app.git?ref=1.0.0"
-  source             = "git::https://github.com/nexient-llc/tf-aws-wrapper_module-ecs_appmesh_app.git?ref=0.1.0"
-  naming_prefix      = "${var.instance_env}-${var.instance_resource}-hb"
-  environment        = var.class_env
-  region             = var.region
-  environment_number = var.instance_env
-  resource_number    = var.instance_resource
+  #TODO: Won't work until ecs_appmesh_app has a public repo in launchbynttdata org
+  # source  = "terraform.registry.launch.nttdata.com/module_collection/ecs_appmesh_app/aws"
+  # version = "~> 1.0.0"
+  #TODO: Used for local testing against the main branch of the ecs_appmesh_app's repo
+  source = "../hackhackhack/"
+
+  logical_product_family  = var.logical_product_family
+  logical_product_service = "hb"
+  class_env               = var.class_env
+  region                  = var.region
+  instance_env            = var.instance_env
+  instance_resource       = var.instance_resource
 
   vpc_id               = var.vpc_id
   private_subnets      = var.private_subnets

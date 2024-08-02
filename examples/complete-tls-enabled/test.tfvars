@@ -1,14 +1,12 @@
-# Need to fill the properties within <> like private_ca_arn, dns_zone_name, private_zone, app_image_tag, app_port
+# Need to fill the properties within <> like zone_id, private_ca_arn, dns_zone_name, private_zone, app_image_tag, app_port
 # These above variables are made required so that the user must enter those
 
-naming_prefix = "demo"
-
 interface_vpc_endpoints = {
-  ecr-dkr = {
+  ecrdkr = {
     service_name        = "ecr.dkr"
     private_dns_enabled = true
   }
-  ecr-api = {
+  ecrapi = {
     service_name        = "ecr.api"
     private_dns_enabled = true
   }
@@ -20,7 +18,7 @@ interface_vpc_endpoints = {
     service_name        = "logs"
     private_dns_enabled = true
   }
-  appmesh-envoy-mgmt = {
+  appmeshenvoymgmt = {
     service_name        = "appmesh-envoy-management"
     private_dns_enabled = true
   }
@@ -63,13 +61,14 @@ alb_sg = {
   egress_cidr_blocks = ["0.0.0.0/0"]
 }
 
-dns_zone_name = "<dns_zone_name>"
-private_zone  = false
+zone_id       = "<>"
+dns_zone_name = "<>"
+private_zone  = "<>" #bool
 
 force_new_deployment              = true
 health_check_grace_period_seconds = 120
 
-private_ca_arn = "<private_ca_arn>"
+private_ca_arn = "<>"
 
 # Virtual gateway
 
@@ -91,18 +90,18 @@ vgw_security_group = {
   ]
 }
 
-app_image_tag = "<image_tag>"
-app_port      = 8080
+app_image_tag = "<>"
+app_port      = "<>" #number
 
-app_security_group = {
-  egress_rules        = ["all-all"]
-  egress_cidr_blocks  = ["0.0.0.0/0"]
-  ingress_cidr_blocks = ["0.0.0.0/0"]
-  ingress_with_cidr_blocks = [
-    {
-      from_port = 8080
-      to_port   = 8080
-      protocol  = "tcp"
-    }
-  ]
-}
+#app_security_group = {
+#  egress_rules        = ["all-all"]
+#  egress_cidr_blocks  = ["0.0.0.0/0"]
+#  ingress_cidr_blocks = ["0.0.0.0/0"]
+#  ingress_with_cidr_blocks = [
+#    {
+#      from_port = 8080
+#      to_port   = 8080
+#      protocol  = "tcp"
+#    }
+#  ]
+#}

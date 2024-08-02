@@ -75,6 +75,7 @@ variable "instance_resource" {
 }
 
 variable "region" {
+  type        = string
   description = "AWS Region in which the infra needs to be provisioned"
   default     = "us-east-2"
 }
@@ -82,15 +83,19 @@ variable "region" {
 ### VPC related variables
 
 variable "vpc_cidr" {
-  default = "10.1.0.0/16"
+  type        = string
+  description = "CIDR block related to the VPC"
+  default     = "10.1.0.0/16"
 }
 
 variable "private_subnets" {
+  type        = list(string)
   description = "List of private subnet cidrs"
   default     = ["10.1.1.0/24", "10.1.2.0/24", "10.1.3.0/24"]
 }
 
 variable "availability_zones" {
+  type        = list(string)
   description = "List of availability zones for the VPC"
   default     = ["us-east-2a", "us-east-2b", "us-east-2c"]
 }
@@ -169,26 +174,19 @@ variable "alb_sg" {
   })
 }
 
+variable "zone_id" {
+  description = "Zone ID of the hosted zonee"
+  type        = string
+}
+
 variable "dns_zone_name" {
-  description = "Name of the  Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true"
+  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true"
   type        = string
 }
 
 variable "private_zone" {
   description = "Whether the dns_zone_name provided above is a private or public hosted zone. Required if dns_zone_name is not empty"
   type        = string
-}
-
-variable "wait_for_steady_state" {
-  type        = bool
-  description = "If true, it will wait for the service to reach a steady state (like aws ecs wait services-stable) before continuing"
-  default     = false
-}
-
-variable "redeploy_on_apply" {
-  description = "Redeploys the service everytime a terraform apply is executed. force_new_deployment should also be true for this flag to work"
-  type        = bool
-  default     = false
 }
 
 variable "force_new_deployment" {
@@ -201,23 +199,6 @@ variable "health_check_grace_period_seconds" {
   type        = number
   description = "Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent premature shutdown, up to 7200. Only valid for services configured to use load balancers"
   default     = 0
-}
-
-## health check application related variables
-variable "app_task_cpu" {
-  description = "Amount of CPU to be allocated to the health check app task"
-  default     = 512
-}
-
-variable "app_task_memory" {
-  description = "Amount of Memory to be allocated to the health check app task"
-  default     = 1024
-}
-
-variable "app_desired_count" {
-  type        = number
-  description = "The number of instances of the health check task definition to place and keep running"
-  default     = 1
 }
 
 variable "app_image_tag" {

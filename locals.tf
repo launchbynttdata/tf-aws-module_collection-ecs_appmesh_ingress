@@ -46,10 +46,13 @@ locals {
   # Need to construct the alb_dns_records as a map of object (alias A record)
   alb_dns_records = {
     (module.resource_names["alb"].standard) = {
-      type = "A"
+      type    = "A"
+      name    = module.alb.lb_dns_name
+      zone_id = module.alb.lb_zone_id
       alias = {
-        name    = module.alb.lb_dns_name
-        zone_id = module.alb.lb_zone_id
+        name                   = module.alb.lb_dns_name
+        zone_id                = module.alb.lb_zone_id
+        evaluate_target_health = true
       }
     }
   }
