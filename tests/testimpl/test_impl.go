@@ -23,7 +23,7 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 	vpcId := terraform.Output(t, ctx.TerratestTerraformOptions(), "vpc_id")
 	appMeshId := terraform.Output(t, ctx.TerratestTerraformOptions(), "app_mesh_id")
 	vgwName := terraform.Output(t, ctx.TerratestTerraformOptions(), "virtual_gateway_name")
-	vgwCaArn := terraform.Output(t, ctx.TerratestTerraformOptions(), "vgw_ca_arn")
+	vgwCaArn := terraform.Output(t, ctx.TerratestTerraformOptions(), "virtual_gateway_cert_arn")
 
 	expectedTlsMode := "STRICT"
 

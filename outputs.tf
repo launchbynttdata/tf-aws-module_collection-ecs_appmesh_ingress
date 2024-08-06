@@ -68,12 +68,12 @@ output "acm_ca_arn" {
 
 output "acm_cert_arn" {
   description = "ARN of the certificate provisioned for ALB"
-  value       = try(module.acm[0].acm_certificate_arn, "")
+  value       = try(module.private_cert_alb.certificate_arn, "")
 }
 
 output "virtual_gateway_cert_arn" {
   description = "ARN of the certificate provisioned for the virtual gateway"
-  value       = try(module.virtual_gateway.acm_certificate_arn, "")
+  value       = try(module.private_cert_vgw.certificate_arn, "")
 }
 
 output "virtual_gateway_arn" {

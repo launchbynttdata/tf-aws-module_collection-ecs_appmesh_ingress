@@ -58,6 +58,8 @@ locals {
     }
   }
 
+  alb_domain_name = module.alb.lb_dns_name
+
   # ACM cert doesnt allow first domain name > 64 chars. Hence, add a SAN for the standard name of ALB in-case the actual ALB name > 32 characters and a shortened name is used for ALB
   # We still would like to use the standard name in the custom A-record
   san = module.resource_names["alb"].recommended_per_length_restriction != module.resource_names["alb"].standard ? ["${module.resource_names["alb"].standard}.${var.dns_zone_name}"] : []
@@ -70,7 +72,6 @@ locals {
   # Role policies
 
   task_exec_role_default_managed_policies_map = merge({
-    #TODO: Check with Aaron regarding additional policies, managed or otherwise
     envoy_access         = "arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess"
     ecs_task_exec        = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
     envoy_preview_access = "arn:aws:iam::aws:policy/AWSAppMeshPreviewEnvoyAccess"

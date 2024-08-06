@@ -11,12 +11,7 @@
 // limitations under the License.
 
 locals {
-  random_id = random_integer.priority.result
-  //name                 = "${var.logical_product_family}-${var.logical_product_service}-vroute-${local.random_id}"
-  //service_name         = "${var.logical_product_family}-${var.logical_product_service}-svc-${local.random_id}"
-  //app_mesh_name        = "${var.logical_product_family}-${var.logical_product_service}-app-mesh-${local.random_id}"
-  //virtual_gateway_name = "${var.logical_product_family}-${var.logical_product_service}-vgw-${local.random_id}"
-  //virtual_node_name    = "${var.logical_product_family}-${var.logical_product_service}-vnode-${local.random_id}"
+  random_id      = random_integer.priority.result
   vpc_name       = "${var.logical_product_family}-${var.logical_product_service}-vpc-${local.random_id}"
   namespace_name = "${var.logical_product_family}-${var.logical_product_service}.local"
 }

@@ -26,24 +26,6 @@ module "resource_names" {
   maximum_length          = each.value.max_length
 }
 
-# ALB Security Group
-module "sg_alb" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.17.1"
-
-  vpc_id                   = var.vpc_id
-  name                     = module.resource_names["alb_sg"].recommended_per_length_restriction
-  description              = lookup(var.alb_sg, "description", "Security Group for ALB")
-  ingress_cidr_blocks      = coalesce(try(lookup(var.alb_sg, "ingress_cidr_blocks", []), []), [])
-  ingress_rules            = coalesce(try(lookup(var.alb_sg, "ingress_rules", []), []), [])
-  ingress_with_cidr_blocks = coalesce(try(lookup(var.alb_sg, "ingress_with_cidr_blocks", []), []), [])
-  egress_cidr_blocks       = coalesce(try(lookup(var.alb_sg, "egress_cidr_blocks", []), []), [])
-  egress_rules             = coalesce(try(lookup(var.alb_sg, "egress_rules", []), []), [])
-  egress_with_cidr_blocks  = coalesce(try(lookup(var.alb_sg, "egress_with_cidr_blocks", []), []), [])
-
-  tags = merge(local.tags, { resource_name = module.resource_names["alb_sg"].standard })
-}
-
 # A S3 bucket for ALB logging is only created when a pre-existing bucket is not specified as input
 module "alb_logs_s3" {
   source  = "terraform-aws-modules/s3-bucket/aws"
@@ -74,9 +56,7 @@ module "alb" {
   name               = module.resource_names["alb"].recommended_per_length_restriction
   internal           = var.is_internal
   load_balancer_type = var.load_balancer_type
-  # SG is created by separate module
-  create_security_group = false
-  idle_timeout          = var.idle_timeout
+  idle_timeout       = var.idle_timeout
 
   vpc_id          = var.vpc_id
   subnets         = var.private_subnets
@@ -115,15 +95,25 @@ module "alb" {
     port               = 443
     protocol           = "HTTPS"
     target_group_index = 0
-    certificate_arn    = module.acm[0].acm_certificate_arn
+    certificate_arn    = module.private_cert_alb.certificate_arn
     ssl_policy         = var.listener_ssl_policy_default
   }] : []
 
-  http_tcp_listeners_tags = merge(local.tags, { resource_name = module.resource_names["alb"].standard })
+  tags                    = local.tags
+  http_tcp_listeners_tags = local.tags
 
-  tags = merge(local.tags, { resource_name = module.resource_names["alb"].standard })
+  # SG is created by separate module
+  create_security_group = false
+}
 
-  depends_on = [module.alb_logs_s3]
+# DNS Zone where the records for the ALB will be created
+data "aws_route53_zone" "dns_zone" {
+  #This zone cannot be associated with CloudMap
+  name         = var.dns_zone_name
+  zone_id      = var.zone_id
+  private_zone = var.private_zone
+
+  vpc_id = var.vpc_id
 }
 
 module "alb_dns_record" {
@@ -131,34 +121,8 @@ module "alb_dns_record" {
   version = "~> 1.0.0"
 
   #This zone cannot be associated with CloudMap
-  zone_id = var.zone_id
+  zone_id = data.aws_route53_zone.dns_zone.zone_id
   records = local.alb_dns_records
-}
-
-# DNS Zone where the records for the ALB will be created
-data "aws_route53_zone" "dns_zone" {
-  count = length(var.dns_zone_name) > 0 || var.use_https_listeners ? 1 : 0
-
-  #This zone cannot be associated with CloudMap
-  name         = var.dns_zone_name
-  zone_id      = var.zone_id
-  private_zone = var.private_zone
-}
-
-# Certificate Manager where the certs for ALB will be provisioned
-module "acm" {
-  source  = "terraform-aws-modules/acm/aws"
-  version = "~> 4.3.2"
-
-  count = var.use_https_listeners ? 1 : 0
-
-  # First domain name must be < 64 chars
-  domain_name               = "${module.resource_names["alb"].recommended_per_length_restriction}.${var.dns_zone_name}"
-  subject_alternative_names = concat(local.san, var.subject_alternate_names)
-  #This zone cannot be associated with CloudMap
-  zone_id = data.aws_route53_zone.dns_zone[count.index].zone_id
-
-  tags = merge(local.tags, { resource_name = module.resource_names["acm"].standard })
 }
 
 # Service Discovery services for Virtual Gateway
@@ -172,17 +136,37 @@ module "sds" {
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
 }
 
-# Create private certificates for virtual gateway
-module "private_certs" {
+# Create private certificate for ALB
+module "private_cert_alb" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws"
   version = "~> 1.0.0"
 
   private_ca_arn = var.private_ca_arn
-  # Must be < 64
+  #module.ecs_ingress.module.alb_dns_record.aws_route53_record.route53_record["launch-backend-useast2-dev-000-alb-000"]:
+  domain_name               = local.alb_domain_name
+  subject_alternative_names = flatten(concat(local.san, var.subject_alternate_names))
+
+  tags = merge(local.tags, { resource_name = module.resource_names["alb"].standard })
+
+  #Ensure that the DNS record exists before requesting a cert
+  depends_on = [module.alb_dns_record]
+}
+
+
+# Create private certificate for virtual gateway
+module "private_cert_vgw" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws"
+  version = "~> 1.0.0"
+
+  private_ca_arn = var.private_ca_arn
+
   domain_name               = local.updated_domain_name
   subject_alternative_names = local.private_cert_san
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
+
+  #Attempt to avoid 409 concurrency issue within this module source
+  depends_on = [module.private_cert_alb]
 }
 
 module "virtual_gateway" {
@@ -202,7 +186,7 @@ module "virtual_gateway" {
   tls_mode                             = var.vgw_tls_mode
   tls_ports                            = var.vgw_tls_ports
   text_format                          = var.vgw_logs_text_format
-  acm_certificate_arn                  = module.private_certs.certificate_arn
+  acm_certificate_arn                  = module.private_cert_vgw.certificate_arn
   trust_acm_certificate_authority_arns = [var.private_ca_arn]
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
@@ -222,10 +206,14 @@ module "ecs_task_execution_policy" {
   name                          = "${var.resource_names_map["task_exec_policy"].name}-${var.instance_resource}"
   iam_policy_enabled            = true
   iam_override_policy_documents = [var.ecs_exec_role_custom_policy_json]
+
+  tags = local.tags
+
+  # Attempts to avoid 409 concurrency issue with IAM policies
+  depends_on = [module.alb_logs_s3]
 }
 
 module "ecs_task_policy" {
-
   source  = "cloudposse/iam-policy/aws"
   version = "~> 0.4.0"
 
@@ -236,6 +224,11 @@ module "ecs_task_policy" {
   name                        = "${var.resource_names_map["task_policy"].name}-${var.instance_resource}"
   iam_policy_enabled          = true
   iam_source_policy_documents = local.ecs_role_custom_policy_json
+
+  tags = local.tags
+
+  #Avoids 409 concurrency issue within this module source
+  depends_on = [module.ecs_task_execution_policy]
 }
 
 module "virtual_gateway_container_definition" {
@@ -251,7 +244,24 @@ module "virtual_gateway_container_definition" {
   map_environment              = local.vgw_container.environment
   port_mappings                = local.vgw_container.port_mappings
   log_configuration            = local.vgw_container.log_configuration
+}
 
+# ALB Security Group
+module "sg_alb" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 4.17.1"
+
+  vpc_id                   = var.vpc_id
+  name                     = module.resource_names["alb_sg"].recommended_per_length_restriction
+  description              = lookup(var.alb_sg, "description", "Security Group for ALB")
+  ingress_cidr_blocks      = coalesce(try(lookup(var.alb_sg, "ingress_cidr_blocks", []), []), [])
+  ingress_rules            = coalesce(try(lookup(var.alb_sg, "ingress_rules", []), []), [])
+  ingress_with_cidr_blocks = coalesce(try(lookup(var.alb_sg, "ingress_with_cidr_blocks", []), []), [])
+  egress_cidr_blocks       = coalesce(try(lookup(var.alb_sg, "egress_cidr_blocks", []), []), [])
+  egress_rules             = coalesce(try(lookup(var.alb_sg, "egress_rules", []), []), [])
+  egress_with_cidr_blocks  = coalesce(try(lookup(var.alb_sg, "egress_with_cidr_blocks", []), []), [])
+
+  tags = merge(local.tags, { resource_name = module.resource_names["alb_sg"].standard })
 }
 
 # Security Group for ECS task
@@ -294,6 +304,9 @@ module "sg_ecs_service_vgw" {
   egress_with_cidr_blocks  = coalesce(try(lookup(var.vgw_security_group, "egress_with_cidr_blocks", []), []), [])
 
   tags = merge(local.tags, { resource_name = module.resource_names["vgw_ecs_sg"].standard })
+
+  #Attempts to avoid 409 concurrency issue within this module source
+  depends_on = [module.sg_alb]
 }
 
 # ECS Service
@@ -352,6 +365,11 @@ module "virtual_gateway_ecs_service" {
   ]
 
   tags = merge(local.tags, { resource_name = module.resource_names["vgw_ecs_app"].standard })
+
+
+  #Temporary attempt to work around the following:
+  # Error: creating App Mesh Virtual Node (launch-hb-useast2-dev-000-vnode-000): BadRequestException: Service Discovery can't be set without a listener.
+  depends_on = [module.sds]
 }
 
 # This module will provision a simple HTTP server as an ECS app used for Health Check (`/health`) for the Ingress Virtual Gateway
@@ -393,5 +411,6 @@ module "ecs_app_heart_beat" {
   ignore_changes_task_definition = var.ignore_changes_task_definition
   wait_for_steady_state          = var.wait_for_steady_state
 
-  depends_on = [module.virtual_gateway_ecs_service, module.virtual_gateway]
+  # Attempts to avoid 409 concurrency issue with IAM policies
+  depends_on = [module.alb_logs_s3, module.ecs_task_policy, module.ecs_task_execution_policy, module.virtual_gateway]
 }
