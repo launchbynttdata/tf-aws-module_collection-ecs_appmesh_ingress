@@ -197,7 +197,7 @@ module "ecs_task_execution_policy" {
   count = length(var.ecs_exec_role_custom_policy_json) > 0 ? 1 : 0
 
   source  = "cloudposse/iam-policy/aws"
-  version = "~> 0.4.0"
+  version = "~> 2.0.1"
 
   enabled                       = true
   namespace                     = "${var.logical_product_family}-${join("", split("-", var.region))}"
@@ -215,7 +215,7 @@ module "ecs_task_execution_policy" {
 
 module "ecs_task_policy" {
   source  = "cloudposse/iam-policy/aws"
-  version = "~> 0.4.0"
+  version = "~> 2.0.1"
 
   enabled                     = true
   namespace                   = "${var.logical_product_family}-${join("", split("-", var.region))}"
@@ -232,7 +232,7 @@ module "ecs_task_policy" {
 }
 
 module "virtual_gateway_container_definition" {
-  source = "git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git?ref=tags/0.59.0"
+  source = "git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git?ref=tags/0.61.1"
 
   container_name               = local.vgw_container.name
   container_image              = local.vgw_container.image_tag
@@ -369,7 +369,7 @@ module "virtual_gateway_ecs_service" {
 
   #Temporary attempt to work around the following:
   # Error: creating App Mesh Virtual Node (launch-hb-useast2-dev-000-vnode-000): BadRequestException: Service Discovery can't be set without a listener.
-  depends_on = [module.sds]
+  depends_on = [module.sds, module.virtual_gateway_container_definition, module.sg_ecs_service_vgw, module.alb]
 }
 
 # This module will provision a simple HTTP server as an ECS app used for Health Check (`/health`) for the Ingress Virtual Gateway

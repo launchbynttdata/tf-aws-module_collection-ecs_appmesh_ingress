@@ -201,9 +201,9 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="module_private_cert_alb"></a> [private\_cert\_alb](#module\_private\_cert\_alb) | terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws | ~> 1.0.0 |
 | <a name="module_private_cert_vgw"></a> [private\_cert\_vgw](#module\_private\_cert\_vgw) | terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws | ~> 1.0.0 |
 | <a name="module_virtual_gateway"></a> [virtual\_gateway](#module\_virtual\_gateway) | terraform.registry.launch.nttdata.com/module_primitive/virtual_gateway/aws | ~> 1.0.0 |
-| <a name="module_ecs_task_execution_policy"></a> [ecs\_task\_execution\_policy](#module\_ecs\_task\_execution\_policy) | cloudposse/iam-policy/aws | ~> 0.4.0 |
-| <a name="module_ecs_task_policy"></a> [ecs\_task\_policy](#module\_ecs\_task\_policy) | cloudposse/iam-policy/aws | ~> 0.4.0 |
-| <a name="module_virtual_gateway_container_definition"></a> [virtual\_gateway\_container\_definition](#module\_virtual\_gateway\_container\_definition) | git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git | tags/0.59.0 |
+| <a name="module_ecs_task_execution_policy"></a> [ecs\_task\_execution\_policy](#module\_ecs\_task\_execution\_policy) | cloudposse/iam-policy/aws | ~> 2.0.1 |
+| <a name="module_ecs_task_policy"></a> [ecs\_task\_policy](#module\_ecs\_task\_policy) | cloudposse/iam-policy/aws | ~> 2.0.1 |
+| <a name="module_virtual_gateway_container_definition"></a> [virtual\_gateway\_container\_definition](#module\_virtual\_gateway\_container\_definition) | git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git | tags/0.61.1 |
 | <a name="module_sg_alb"></a> [sg\_alb](#module\_sg\_alb) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
 | <a name="module_sg_ecs_service_vgw"></a> [sg\_ecs\_service\_vgw](#module\_sg\_ecs\_service\_vgw) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
 | <a name="module_virtual_gateway_ecs_service"></a> [virtual\_gateway\_ecs\_service](#module\_virtual\_gateway\_ecs\_service) | cloudposse/ecs-alb-service-task/aws | ~> 0.67.1 |
