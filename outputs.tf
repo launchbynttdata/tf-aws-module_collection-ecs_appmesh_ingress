@@ -17,11 +17,10 @@ output "resource_names" {
   value       = { for k, v in var.resource_names_map : k => module.resource_names[k].standard }
 }
 
-#TODO:
-#output "app_sg_id" {
-#  description = "The ID of the VPC Endpoint Security Group"
-#  value       = module.ecs_app_heart_beat.ecs_sg_id
-#}
+output "app_sg_id" {
+  description = "The ID of the VPC Endpoint Security Group"
+  value       = module.ecs_app_heart_beat.ecs_sg_id
+}
 
 ## ALB related outputs
 
@@ -102,12 +101,12 @@ output "tls_enforce" {
   value       = var.tls_enforce
 }
 
-#output "heartbeat_app_task_definition_name" {
-#  description = "Task Definition Version of the HeartBeat application"
-#  value       = try(module.ecs_app_heart_beat.task_definition_name, "")
-#}
+output "heartbeat_app_task_definition_name" {
+  description = "Task Definition Version of the HeartBeat application"
+  value       = try(module.ecs_app_heart_beat.task_definition_name, "")
+}
 
-#output "heartbeat_app_task_definition_version" {
-#  description = "Task Definition Version of the HeartBeat application"
-#  value       = module.ecs_app_heart_beat.task_definition_version
-#}
+output "heartbeat_app_task_definition_version" {
+  description = "Task Definition Version of the HeartBeat application"
+  value       = module.ecs_app_heart_beat.task_definition_version
+}

@@ -77,7 +77,6 @@ locals {
   }, var.ecs_exec_role_managed_policy_arns)
 
   task_role_default_managed_policies_map = merge({
-    #TODO: These may not be required for task_role
     envoy_access         = "arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess"
     ecs_task_exec        = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
     envoy_preview_access = "arn:aws:iam::aws:policy/AWSAppMeshPreviewEnvoyAccess"

@@ -289,6 +289,7 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | Name | Description |
 |------|-------------|
 | <a name="output_resource_names"></a> [resource\_names](#output\_resource\_names) | A map of resource\_name\_types to generated resource names used in this module |
+| <a name="output_app_sg_id"></a> [app\_sg\_id](#output\_app\_sg\_id) | The ID of the VPC Endpoint Security Group |
 | <a name="output_alb_dns"></a> [alb\_dns](#output\_alb\_dns) | AWS provided DNS record of the ALB |
 | <a name="output_alb_arn"></a> [alb\_arn](#output\_alb\_arn) | ARN of the ALB |
 | <a name="output_alb_id"></a> [alb\_id](#output\_alb\_id) | ID of the ALB |
@@ -304,4 +305,6 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="output_virtual_gateway_task_definition_version"></a> [virtual\_gateway\_task\_definition\_version](#output\_virtual\_gateway\_task\_definition\_version) | Revision of the Virtual Gateway ECS app task definition. |
 | <a name="output_virtual_gateway_name"></a> [virtual\_gateway\_name](#output\_virtual\_gateway\_name) | Name of the Virtual Gateway |
 | <a name="output_tls_enforce"></a> [tls\_enforce](#output\_tls\_enforce) | Whether TLS is enforced on the Virtual Gateway. If true, all the Virtual Nodes should also enable TLS |
+| <a name="output_heartbeat_app_task_definition_name"></a> [heartbeat\_app\_task\_definition\_name](#output\_heartbeat\_app\_task\_definition\_name) | Task Definition Version of the HeartBeat application |
+| <a name="output_heartbeat_app_task_definition_version"></a> [heartbeat\_app\_task\_definition\_version](#output\_heartbeat\_app\_task\_definition\_version) | Task Definition Version of the HeartBeat application |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
