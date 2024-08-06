@@ -130,6 +130,7 @@ module "alb_dns_record" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/dns_record/aws"
   version = "~> 1.0.0"
 
+  #This zone cannot be associated with CloudMap
   zone_id = var.zone_id
   records = local.alb_dns_records
 }
@@ -138,9 +139,10 @@ module "alb_dns_record" {
 data "aws_route53_zone" "dns_zone" {
   count = length(var.dns_zone_name) > 0 || var.use_https_listeners ? 1 : 0
 
+  #This zone cannot be associated with CloudMap
   name         = var.dns_zone_name
-  private_zone = var.private_zone
   zone_id      = var.zone_id
+  private_zone = var.private_zone
 }
 
 # Certificate Manager where the certs for ALB will be provisioned
@@ -153,7 +155,8 @@ module "acm" {
   # First domain name must be < 64 chars
   domain_name               = "${module.resource_names["alb"].recommended_per_length_restriction}.${var.dns_zone_name}"
   subject_alternative_names = concat(local.san, var.subject_alternate_names)
-  zone_id                   = data.aws_route53_zone.dns_zone[count.index].zone_id
+  #This zone cannot be associated with CloudMap
+  zone_id = data.aws_route53_zone.dns_zone[count.index].zone_id
 
   tags = merge(local.tags, { resource_name = module.resource_names["acm"].standard })
 }

@@ -61,14 +61,15 @@ alb_sg = {
   egress_cidr_blocks = ["0.0.0.0/0"]
 }
 
+#WARNING: zone_id and dns_zone_id must refer to the same zone and the zone cannot be one which is  managed by Cloud Map
 zone_id       = "<>"
 dns_zone_name = "<>"
-private_zone  = "<>" #bool
+private_zone  = "<>" # bool
 
 force_new_deployment              = true
 health_check_grace_period_seconds = 120
 
-private_ca_arn = "<>"
+private_ca_arn = "arn:aws:acm-pca:us-east-2:020127659860:certificate-authority/aae3aa9a-a2d0-42ac-a16b-0fc6d54b109c"
 
 # Virtual gateway
 
@@ -91,7 +92,7 @@ vgw_security_group = {
 }
 
 app_image_tag = "<>"
-app_port      = "<>" #number
+app_port      = "<>" # number
 
 #app_security_group = {
 #  egress_rules        = ["all-all"]

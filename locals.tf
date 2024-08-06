@@ -46,7 +46,8 @@ locals {
   # Need to construct the alb_dns_records as a map of object (alias A record)
   alb_dns_records = {
     (module.resource_names["alb"].standard) = {
-      type    = "A"
+      type = "A"
+      # These name and zone_id must refer to a zone which is not managed by Cloud Map
       name    = module.alb.lb_dns_name
       zone_id = module.alb.lb_zone_id
       alias = {
@@ -69,6 +70,7 @@ locals {
   # Role policies
 
   task_exec_role_default_managed_policies_map = merge({
+    #TODO: Check with Aaron regarding additional policies, managed or otherwise
     envoy_access         = "arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess"
     ecs_task_exec        = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
     envoy_preview_access = "arn:aws:iam::aws:policy/AWSAppMeshPreviewEnvoyAccess"
@@ -119,8 +121,9 @@ EOF
 
   # Virtual Gateway task definition always contains 1 container (envoy proxy)
   vgw_container = {
-    name      = "envoy"
-    image_tag = length(var.envoy_proxy_image) > 0 ? var.envoy_proxy_image : "public.ecr.aws/appmesh/aws-appmesh-envoy:v1.25.4.0-prod"
+    name = "envoy"
+    # See README.md or https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html for latest version
+    image_tag = length(var.envoy_proxy_image) > 0 ? var.envoy_proxy_image : "public.ecr.aws/appmesh/aws-appmesh-envoy:v1.29.6.0-prod"
     log_configuration = {
       logDriver = "awslogs"
       options = {

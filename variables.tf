@@ -229,8 +229,14 @@ variable "alb_sg" {
 }
 
 variable "zone_id" {
-  description = "Zone ID of the hosted zonee"
+  description = "Zone ID of the hosted zone. Cannot be associated with CloudMap"
   type        = string
+}
+
+variable "dns_zone_name" {
+  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true. Cannot be associated with CloudMap"
+  type        = string
+  default     = ""
 }
 
 variable "target_groups" {
@@ -255,12 +261,6 @@ variable "subject_alternate_names" {
   description = "Additional domain names to be added to the certificate created for ALB. Domain names must be FQDN."
   type        = list(string)
   default     = []
-}
-
-variable "dns_zone_name" {
-  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true"
-  type        = string
-  default     = ""
 }
 
 variable "private_zone" {
@@ -380,9 +380,10 @@ variable "ecs_role_custom_policy_json" {
 }
 
 variable "envoy_proxy_image" {
+  // See https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html for latest version
   description = <<EOT
     Optional docker image of the envoy proxy in the format `<docker_image>:<tag>`
-    Default is `840364872350.dkr.ecr.us-east-2.amazonaws.com/aws-appmesh-envoy:v1.25.4.0-prod`
+    Default is `840364872350.dkr.ecr.us-east-2.amazonaws.com/aws-appmesh-envoy:v1.29.6.0-prod`
   EOT
   type        = string
   default     = ""

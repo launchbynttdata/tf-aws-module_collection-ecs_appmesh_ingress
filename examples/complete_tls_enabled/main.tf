@@ -74,9 +74,12 @@ module "ecs_ingress" {
 
   alb_sg              = var.alb_sg
   use_https_listeners = true
-  dns_zone_name       = var.dns_zone_name
-  private_zone        = var.private_zone
-  zone_id             = var.zone_id
+
+  #This zone cannot be associated with CloudMap
+  dns_zone_name = var.dns_zone_name
+  private_zone  = var.private_zone
+  zone_id       = var.zone_id
+
   target_groups = [
     {
       backend_protocol = "https"

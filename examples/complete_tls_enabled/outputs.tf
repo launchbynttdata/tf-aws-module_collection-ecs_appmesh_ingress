@@ -12,3 +12,27 @@
 output "vpc_id" {
   value = module.vpc.vpc_id
 }
+output "app_mesh_id" {
+  value = module.ecs_platform.app_mesh_id
+}
+output "virtual_gateway_name" {
+  value = module.ecs_ingress.virtual_gateway_name
+}
+output "virtual_gateway_arn" {
+  value = module.ecs_ingress.virtual_gateway_arn
+}
+output "virtual_gateway_cert_arn" {
+  value = module.ecs_ingress.virtual_gateway_cert_arn
+}
+output "ca_arn" {
+  value = module.ecs_ingress.acm_ca_arn
+}
+output "alb_dns" {
+  value = module.ecs_ingress.alb_dns
+}
+output "alb_id" {
+  value = module.ecs_ingress.alb_id
+}
+output "acm_cert_arn" {
+  value = module.ecs_ingress.acm_cert_arn
+}

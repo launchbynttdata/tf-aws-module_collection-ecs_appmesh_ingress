@@ -175,12 +175,12 @@ variable "alb_sg" {
 }
 
 variable "zone_id" {
-  description = "Zone ID of the hosted zonee"
+  description = "Zone ID of the hosted zone.  Cannot be associated with CloudMap"
   type        = string
 }
 
 variable "dns_zone_name" {
-  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true"
+  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true. Cannot be associated with CloudMap"
   type        = string
 }
 

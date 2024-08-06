@@ -62,9 +62,19 @@ output "alb_dns_records" {
   value       = try(module.alb_dns_record[0].record_fqdns, "")
 }
 
+output "acm_ca_arn" {
+  description = "ARN of the private CA"
+  value       = try(module.virtual_gateway.trust_acm_certificate_authority_arns[0], "")
+}
+
 output "acm_cert_arn" {
   description = "ARN of the certificate provisioned for ALB"
   value       = try(module.acm[0].acm_certificate_arn, "")
+}
+
+output "virtual_gateway_cert_arn" {
+  description = "ARN of the certificate provisioned for the virtual gateway"
+  value       = try(module.virtual_gateway.acm_certificate_arn, "")
 }
 
 output "virtual_gateway_arn" {
