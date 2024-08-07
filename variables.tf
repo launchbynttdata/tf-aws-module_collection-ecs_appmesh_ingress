@@ -228,17 +228,6 @@ variable "alb_sg" {
   })
 }
 
-variable "zone_id" {
-  description = "Zone ID of the hosted zone. Cannot be associated with CloudMap"
-  type        = string
-}
-
-variable "dns_zone_name" {
-  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true. Cannot be associated with CloudMap"
-  type        = string
-  default     = ""
-}
-
 variable "target_groups" {
   description = <<EOT
     List of target groups for the ALB"
@@ -257,10 +246,21 @@ variable "target_groups" {
   }))
 }
 
+variable "dns_zone_id" {
+  description = "Zone ID of the hosted zone. Cannot be associated with CloudMap"
+  type        = string
+}
+
 variable "subject_alternate_names" {
   description = "Additional domain names to be added to the certificate created for ALB. Domain names must be FQDN."
   type        = list(string)
   default     = []
+}
+
+variable "dns_zone_name" {
+  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true. Cannot be associated with CloudMap"
+  type        = string
+  default     = ""
 }
 
 variable "private_zone" {

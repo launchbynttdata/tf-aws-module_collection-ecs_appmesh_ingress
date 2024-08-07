@@ -47,22 +47,24 @@ locals {
   alb_dns_records = {
     (module.resource_names["alb"].standard) = {
       type = "A"
-      # These name and zone_id must refer to a zone which is not managed by Cloud Map
-      name    = module.alb.lb_dns_name
-      zone_id = module.alb.lb_zone_id
       alias = {
-        name                   = module.alb.lb_dns_name
+        name = module.alb.lb_dns_name
+        # This zone_id must refer to a zone which is not managed by Cloud Map
         zone_id                = module.alb.lb_zone_id
         evaluate_target_health = true
       }
     }
   }
 
-  alb_domain_name = module.alb.lb_dns_name
+  #alb_dns_name = module.alb.lb_dns_name
 
   # ACM cert doesnt allow first domain name > 64 chars. Hence, add a SAN for the standard name of ALB in-case the actual ALB name > 32 characters and a shortened name is used for ALB
   # We still would like to use the standard name in the custom A-record
   san = module.resource_names["alb"].recommended_per_length_restriction != module.resource_names["alb"].standard ? ["${module.resource_names["alb"].standard}.${var.dns_zone_name}"] : []
+
+  # ACM first domain name must be < 64 characters
+  # We still would like to use the standard name in the custom A-record
+  #alb_private_cert_san = [module.resource_names["alb"].dns_compliant_minimal, module.resource_names["alb"].recommended_per_length_restriction]
 
   # ACM first domain name must be < 64 characters
   actual_domain_name  = "${module.resource_names["virtual_gateway"].standard}.${var.namespace_name}"

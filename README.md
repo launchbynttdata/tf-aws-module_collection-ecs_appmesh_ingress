@@ -194,17 +194,17 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 1.0 |
+| <a name="module_sg_alb"></a> [sg\_alb](#module\_sg\_alb) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
 | <a name="module_alb_logs_s3"></a> [alb\_logs\_s3](#module\_alb\_logs\_s3) | terraform-aws-modules/s3-bucket/aws | ~> 3.8.2 |
 | <a name="module_alb"></a> [alb](#module\_alb) | terraform-aws-modules/alb/aws | ~> 8.0 |
 | <a name="module_alb_dns_record"></a> [alb\_dns\_record](#module\_alb\_dns\_record) | terraform.registry.launch.nttdata.com/module_primitive/dns_record/aws | ~> 1.0.0 |
+| <a name="module_acm"></a> [acm](#module\_acm) | terraform-aws-modules/acm/aws | ~> 4.3.2 |
 | <a name="module_sds"></a> [sds](#module\_sds) | terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws | ~> 1.0.0 |
-| <a name="module_private_cert_alb"></a> [private\_cert\_alb](#module\_private\_cert\_alb) | terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws | ~> 1.0.0 |
-| <a name="module_private_cert_vgw"></a> [private\_cert\_vgw](#module\_private\_cert\_vgw) | terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws | ~> 1.0.0 |
+| <a name="module_private_certs"></a> [private\_certs](#module\_private\_certs) | terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws | ~> 1.0.0 |
 | <a name="module_virtual_gateway"></a> [virtual\_gateway](#module\_virtual\_gateway) | terraform.registry.launch.nttdata.com/module_primitive/virtual_gateway/aws | ~> 1.0.0 |
 | <a name="module_ecs_task_execution_policy"></a> [ecs\_task\_execution\_policy](#module\_ecs\_task\_execution\_policy) | cloudposse/iam-policy/aws | ~> 2.0.1 |
 | <a name="module_ecs_task_policy"></a> [ecs\_task\_policy](#module\_ecs\_task\_policy) | cloudposse/iam-policy/aws | ~> 2.0.1 |
 | <a name="module_virtual_gateway_container_definition"></a> [virtual\_gateway\_container\_definition](#module\_virtual\_gateway\_container\_definition) | git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git | tags/0.61.1 |
-| <a name="module_sg_alb"></a> [sg\_alb](#module\_sg\_alb) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
 | <a name="module_sg_ecs_service_vgw"></a> [sg\_ecs\_service\_vgw](#module\_sg\_ecs\_service\_vgw) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
 | <a name="module_virtual_gateway_ecs_service"></a> [virtual\_gateway\_ecs\_service](#module\_virtual\_gateway\_ecs\_service) | cloudposse/ecs-alb-service-task/aws | ~> 0.67.1 |
 | <a name="module_ecs_app_heart_beat"></a> [ecs\_app\_heart\_beat](#module\_ecs\_app\_heart\_beat) | ../hackhackhack/ | n/a |
@@ -236,10 +236,10 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="input_load_balancer_type"></a> [load\_balancer\_type](#input\_load\_balancer\_type) | The type of the load balancer. Default is 'application' | `string` | `"application"` | no |
 | <a name="input_is_internal"></a> [is\_internal](#input\_is\_internal) | Whether this load balancer is internal or public facing | `bool` | `true` | no |
 | <a name="input_alb_sg"></a> [alb\_sg](#input\_alb\_sg) | Security Group for the ALB. https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/rules.tf | <pre>object({<br>    description              = optional(string)<br>    ingress_rules            = optional(list(string))<br>    ingress_cidr_blocks      = optional(list(string))<br>    egress_rules             = optional(list(string))<br>    egress_cidr_blocks       = optional(list(string))<br>    ingress_with_cidr_blocks = optional(list(map(string)))<br>    egress_with_cidr_blocks  = optional(list(map(string)))<br>  })</pre> | n/a | yes |
-| <a name="input_zone_id"></a> [zone\_id](#input\_zone\_id) | Zone ID of the hosted zone. Cannot be associated with CloudMap | `string` | n/a | yes |
-| <a name="input_dns_zone_name"></a> [dns\_zone\_name](#input\_dns\_zone\_name) | Name of the Route53 DNS Zone where custom DNS records will be created. Required if use\_https\_listeners=true. Cannot be associated with CloudMap | `string` | `""` | no |
 | <a name="input_target_groups"></a> [target\_groups](#input\_target\_groups) | List of target groups for the ALB"<br>    `target_type` can be ip, instance<br>    `health_check` must be set for backend\_protocol=HTTPS.<br>    Valid health\_check attributes are healthy\_threshold, unhealthy\_threshold, path, port, protocol<br>      - protocol must be HTTP, HTTPS etc. | <pre>list(object({<br>    # Need to use name_prefix instead of name as the lifecycle property create_before_destroy is set<br>    name_prefix      = optional(string, "albtg-")<br>    backend_protocol = optional(string)<br>    backend_port     = optional(number)<br>    target_type      = optional(string)<br>    health_check     = optional(map(string), {})<br>  }))</pre> | n/a | yes |
+| <a name="input_dns_zone_id"></a> [dns\_zone\_id](#input\_dns\_zone\_id) | Zone ID of the hosted zone. Cannot be associated with CloudMap | `string` | n/a | yes |
 | <a name="input_subject_alternate_names"></a> [subject\_alternate\_names](#input\_subject\_alternate\_names) | Additional domain names to be added to the certificate created for ALB. Domain names must be FQDN. | `list(string)` | `[]` | no |
+| <a name="input_dns_zone_name"></a> [dns\_zone\_name](#input\_dns\_zone\_name) | Name of the Route53 DNS Zone where custom DNS records will be created. Required if use\_https\_listeners=true. Cannot be associated with CloudMap | `string` | `""` | no |
 | <a name="input_private_zone"></a> [private\_zone](#input\_private\_zone) | Whether the dns\_zone\_name provided above is a private or public hosted zone. Required if dns\_zone\_name is not empty | `string` | `""` | no |
 | <a name="input_idle_timeout"></a> [idle\_timeout](#input\_idle\_timeout) | The time in seconds that the connection is allowed to be idle. | `number` | `60` | no |
 | <a name="input_alb_logs_bucket_id"></a> [alb\_logs\_bucket\_id](#input\_alb\_logs\_bucket\_id) | S3 bucket ID for ALB logs | `string` | `""` | no |
@@ -297,8 +297,8 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="output_alb_https_listener_arns"></a> [alb\_https\_listener\_arns](#output\_alb\_https\_listener\_arns) | ARNs of the HTTPs Listeners attached to the ALB |
 | <a name="output_alb_http_listener_arns"></a> [alb\_http\_listener\_arns](#output\_alb\_http\_listener\_arns) | ARNs of the HTTP Listeners attached to the ALB |
 | <a name="output_alb_dns_records"></a> [alb\_dns\_records](#output\_alb\_dns\_records) | Custom DNS record for the ALB |
-| <a name="output_acm_ca_arn"></a> [acm\_ca\_arn](#output\_acm\_ca\_arn) | ARN of the private CA |
-| <a name="output_acm_cert_arn"></a> [acm\_cert\_arn](#output\_acm\_cert\_arn) | ARN of the certificate provisioned for ALB |
+| <a name="output_acm_pca_arn"></a> [acm\_pca\_arn](#output\_acm\_pca\_arn) | ARN of the private CA |
+| <a name="output_alb_cert_arn"></a> [alb\_cert\_arn](#output\_alb\_cert\_arn) | ARN of the certificate provisioned for ALB by ACM |
 | <a name="output_virtual_gateway_cert_arn"></a> [virtual\_gateway\_cert\_arn](#output\_virtual\_gateway\_cert\_arn) | ARN of the certificate provisioned for the virtual gateway |
 | <a name="output_virtual_gateway_arn"></a> [virtual\_gateway\_arn](#output\_virtual\_gateway\_arn) | ARN of the Virtual Gateway |
 | <a name="output_virtual_gateway_task_definition_name"></a> [virtual\_gateway\_task\_definition\_name](#output\_virtual\_gateway\_task\_definition\_name) | Revision of the Virtual Gateway ECS app task definition. |
