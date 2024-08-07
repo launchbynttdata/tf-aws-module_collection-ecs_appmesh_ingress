@@ -174,8 +174,8 @@ variable "alb_sg" {
   })
 }
 
-variable "zone_id" {
-  description = "Zone ID of the hosted zone.  Cannot be associated with CloudMap"
+variable "dns_zone_id" {
+  description = "Zone ID of the hosted DNS zone.  Cannot be associated with CloudMap"
   type        = string
 }
 
