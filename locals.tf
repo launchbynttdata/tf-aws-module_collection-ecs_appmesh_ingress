@@ -43,20 +43,22 @@ locals {
     resource_name = module.resource_names["alb_tg"].standard
   } })]
 
+  alb_dns_name = module.alb.lb_dns_name
+
   # Need to construct the alb_dns_records as a map of object (alias A record)
   alb_dns_records = {
     (module.resource_names["alb"].standard) = {
       type = "A"
+      name = local.alb_dns_name
       alias = {
-        name = module.alb.lb_dns_name
         # This zone_id must refer to a zone which is not managed by Cloud Map
         zone_id                = module.alb.lb_zone_id
+        name                   = local.alb_dns_name
         evaluate_target_health = true
       }
     }
   }
 
-  #alb_dns_name = module.alb.lb_dns_name
 
   # ACM cert doesnt allow first domain name > 64 chars. Hence, add a SAN for the standard name of ALB in-case the actual ALB name > 32 characters and a shortened name is used for ALB
   # We still would like to use the standard name in the custom A-record
