@@ -58,7 +58,7 @@ output "alb_http_listener_arns" {
 
 output "alb_dns_records" {
   description = "Custom DNS record for the ALB"
-  value       = try(module.alb_dns_record[0].record_fqdns, "")
+  value       = try(module.alb_dns_records[0].record_fqdns, "")
 }
 
 output "acm_pca_arn" {

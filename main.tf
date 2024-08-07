@@ -128,7 +128,7 @@ module "alb" {
 }
 
 
-module "alb_dns_record" {
+module "alb_dns_records" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/dns_record/aws"
   version = "~> 1.0.0"
 
@@ -146,6 +146,28 @@ data "aws_route53_zone" "dns_zone" {
   private_zone = var.private_zone
   vpc_id       = var.vpc_id
 }
+/*
+ DNS records for the ALB's SANs
+resource "aws_route53_record" "alb_san" {
+  for_each        = local.alb_san
+  allow_overwrite = true
+  zone_id         = var.dns_zone_id
+  name            = each.keye
+  type            = "A"
+  ttl             = "300"
+  records         = each.value
+}
+
+ DNS records for the ALB's SANs
+resource "aws_route53_record" "vgw_sans" {
+  for_each        = local.private_cert_sans
+  allow_overwrite = true
+  zone_id         = var.dns_zone_id
+  name            = each.key
+  type            = "A"
+  ttl             = "300"
+  records         = each.value
+}*/
 
 # Certificate Manager (not a private CA) where the certs for ALB will be provisioned
 module "acm" {
@@ -155,10 +177,13 @@ module "acm" {
   count = var.use_https_listeners ? 1 : 0
 
   domain_name               = "${module.resource_names["alb"].recommended_per_length_restriction}.${var.dns_zone_name}"
-  subject_alternative_names = concat(local.san, var.subject_alternate_names)
+  subject_alternative_names = local.alb_san
   zone_id                   = data.aws_route53_zone.dns_zone[count.index].zone_id
 
   tags = merge(local.tags, { resource_name = module.resource_names["acm"].standard })
+
+  # Can't validate the SANs if they aren't in the dns_records
+  depends_on = [module.alb_dns_records]
 }
 
 # Service Discovery services for Virtual Gateway
@@ -179,7 +204,7 @@ module "sds" {
 
   private_ca_arn            = var.private_ca_arn
   domain_name               = local.alb_dns_name
-  subject_alternative_names = flatten(concat(local.alb_private_cert_san, var.subject_alternate_names))
+  subject_alternative_names = flatten(concat(local.alb_private_cert_sans, var.subject_alternate_names))
 
   tags = merge(local.tags, { resource_name = module.resource_names["alb"].standard })
 
@@ -196,7 +221,7 @@ module "private_certs" {
   private_ca_arn = var.private_ca_arn
 
   domain_name               = local.updated_domain_name
-  subject_alternative_names = local.private_cert_san
+  subject_alternative_names = local.private_cert_sans
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
 

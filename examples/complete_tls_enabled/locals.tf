@@ -13,5 +13,5 @@
 locals {
   random_id      = random_integer.priority.result
   vpc_name       = "${var.logical_product_family}-${var.logical_product_service}-vpc-${local.random_id}"
-  namespace_name = "${var.logical_product_family}-${var.logical_product_service}.local"
+  namespace_name = "${var.logical_product_family}-${var.logical_product_service}.${var.dns_zone_name}"
 }
