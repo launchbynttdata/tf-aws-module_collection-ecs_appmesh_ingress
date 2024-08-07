@@ -15,21 +15,15 @@ output "vpc_id" {
 output "app_mesh_id" {
   value = module.ecs_platform.app_mesh_id
 }
-output "virtual_gateway_name" {
-  value = module.ecs_ingress.virtual_gateway_name
+output "namespace_name" {
+  value = module.ecs_platform.namespace_name
 }
-output "virtual_gateway_arn" {
-  value = module.ecs_ingress.virtual_gateway_arn
+output "dns_zone_name" {
+  value = module.ecs_ingress.dns_zone_name
 }
-output "virtual_gateway_cert_arn" {
-  value = module.ecs_ingress.virtual_gateway_cert_arn
+output "dns_zone_id" {
+  value = module.ecs_ingress.dns_zone_id
 }
-#output "private_ca_arn" {
-#  value = module.ecs_ingress.private_ca_arn
-#}
-output "alb_dns" {
-  value = module.ecs_ingress.alb_dns
-}
-output "alb_id" {
-  value = module.ecs_ingress.alb_id
+output "private_ca_arn" {
+  value = module.ecs_ingress.private_ca_arn
 }

@@ -142,32 +142,9 @@ data "aws_route53_zone" "dns_zone" {
   count = length(var.dns_zone_name) > 0 || var.use_https_listeners ? 1 : 0
 
   name         = var.dns_zone_name
-  zone_id      = var.dns_zone_id
   private_zone = var.private_zone
   vpc_id       = var.vpc_id
 }
-/*
- DNS records for the ALB's SANs
-resource "aws_route53_record" "alb_san" {
-  for_each        = local.alb_san
-  allow_overwrite = true
-  zone_id         = var.dns_zone_id
-  name            = each.keye
-  type            = "A"
-  ttl             = "300"
-  records         = each.value
-}
-
- DNS records for the ALB's SANs
-resource "aws_route53_record" "vgw_sans" {
-  for_each        = local.private_cert_sans
-  allow_overwrite = true
-  zone_id         = var.dns_zone_id
-  name            = each.key
-  type            = "A"
-  ttl             = "300"
-  records         = each.value
-}*/
 
 # Certificate Manager (not a private CA) where the certs for ALB will be provisioned
 module "acm" {
@@ -196,22 +173,6 @@ module "sds" {
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
 }
-
-# Create private certificate for ALB
-/*module "private_cert_alb" {
-  source  = "terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws"
-  version = "~> 1.0.0"
-
-  private_ca_arn            = var.private_ca_arn
-  domain_name               = local.alb_dns_name
-  subject_alternative_names = flatten(concat(local.alb_private_cert_sans, var.subject_alternate_names))
-
-  tags = merge(local.tags, { resource_name = module.resource_names["alb"].standard })
-
-  #Ensure that the DNS record exists before requesting a cert
-  depends_on = [module.alb_dns_record]
-}*/
-
 
 # Create private certificate for virtual gateway
 module "private_certs" {

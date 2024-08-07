@@ -56,20 +56,22 @@ output "alb_http_listener_arns" {
 
 ## DNS and Certs
 
+output "dns_zone_id" {
+  description = "Zone ID of the hosted zone. Cannot be associated with CloudMap"
+  value       = try(module.alb_dns_records.dns_zone_id, "")
+}
+output "dns_zone_name" {
+  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true. Cannot be associated with CloudMap"
+  value       = var.dns_zone_name
+}
 output "alb_dns_records" {
   description = "Custom DNS record for the ALB"
   value       = try(module.alb_dns_records[0].record_fqdns, "")
 }
-
-output "acm_pca_arn" {
-  description = "ARN of the private CA"
-  value       = try(module.virtual_gateway.trust_acm_certificate_authority_arns[0], "")
+output "private_ca_arn" {
+  description = "ARN of the Private CA. This is used to sign private certificates used in App Mesh. Required when TLS is enabled in App Mesh"
+  value       = try(module.private_certs.private_ca_arn, "")
 }
-
-#output "alb_pca_cert_arn" {
-#  description = "ARN of the certificate provisioned for ALB by the private CA"
-#  value       = try(module.private_cert_alb.certificate_arn, "")
-#}
 
 output "alb_cert_arn" {
   description = "ARN of the certificate provisioned for ALB by ACM"

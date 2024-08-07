@@ -296,8 +296,10 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="output_alb_sg_id"></a> [alb\_sg\_id](#output\_alb\_sg\_id) | ID of the ALB Security Group |
 | <a name="output_alb_https_listener_arns"></a> [alb\_https\_listener\_arns](#output\_alb\_https\_listener\_arns) | ARNs of the HTTPs Listeners attached to the ALB |
 | <a name="output_alb_http_listener_arns"></a> [alb\_http\_listener\_arns](#output\_alb\_http\_listener\_arns) | ARNs of the HTTP Listeners attached to the ALB |
+| <a name="output_dns_zone_id"></a> [dns\_zone\_id](#output\_dns\_zone\_id) | Zone ID of the hosted zone. Cannot be associated with CloudMap |
+| <a name="output_dns_zone_name"></a> [dns\_zone\_name](#output\_dns\_zone\_name) | Name of the Route53 DNS Zone where custom DNS records will be created. Required if use\_https\_listeners=true. Cannot be associated with CloudMap |
 | <a name="output_alb_dns_records"></a> [alb\_dns\_records](#output\_alb\_dns\_records) | Custom DNS record for the ALB |
-| <a name="output_acm_pca_arn"></a> [acm\_pca\_arn](#output\_acm\_pca\_arn) | ARN of the private CA |
+| <a name="output_private_ca_arn"></a> [private\_ca\_arn](#output\_private\_ca\_arn) | ARN of the Private CA. This is used to sign private certificates used in App Mesh. Required when TLS is enabled in App Mesh |
 | <a name="output_alb_cert_arn"></a> [alb\_cert\_arn](#output\_alb\_cert\_arn) | ARN of the certificate provisioned for ALB by ACM |
 | <a name="output_virtual_gateway_cert_arn"></a> [virtual\_gateway\_cert\_arn](#output\_virtual\_gateway\_cert\_arn) | ARN of the certificate provisioned for the virtual gateway |
 | <a name="output_virtual_gateway_arn"></a> [virtual\_gateway\_arn](#output\_virtual\_gateway\_arn) | ARN of the Virtual Gateway |
