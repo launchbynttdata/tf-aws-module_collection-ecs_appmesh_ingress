@@ -74,7 +74,7 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
                         t.Errorf("Error describing virtual gateway: %v", err)
     		}
 		vgw := *output.VirtualGateway
-                //RequireEqualString(t, expectedVgwStatus, string(vgw.Status), "virtual gateway status")
+                RequireEqualString(t, expectedVgwStatus, string(vgw.Status.Status), "virtual gateway status")
 		RequireEqualString(t, vgwName, *vgw.VirtualGatewayName, "virtual gateway name")
 		RequireEqualString(t, vgwArn, *vgw.Metadata.Arn, "virtual gateway ARN")
 		tls := vgw.Spec.Listeners[0].Tls
