@@ -207,7 +207,7 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="module_virtual_gateway_container_definition"></a> [virtual\_gateway\_container\_definition](#module\_virtual\_gateway\_container\_definition) | git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git | tags/0.61.1 |
 | <a name="module_sg_ecs_service_vgw"></a> [sg\_ecs\_service\_vgw](#module\_sg\_ecs\_service\_vgw) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
 | <a name="module_virtual_gateway_ecs_service"></a> [virtual\_gateway\_ecs\_service](#module\_virtual\_gateway\_ecs\_service) | cloudposse/ecs-alb-service-task/aws | ~> 0.67.1 |
-| <a name="module_ecs_app_heart_beat"></a> [ecs\_app\_heart\_beat](#module\_ecs\_app\_heart\_beat) | ../hackhackhack/ | n/a |
+| <a name="module_ecs_app_heart_beat"></a> [ecs\_app\_heart\_beat](#module\_ecs\_app\_heart\_beat) | terraform.registry.launch.nttdata.com/module_collection/ecs_appmesh_app/aws | ~> 1.0 |
 
 ## Resources
 

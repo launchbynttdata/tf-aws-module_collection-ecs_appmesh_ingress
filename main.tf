@@ -374,11 +374,8 @@ module "virtual_gateway_ecs_service" {
 
 # This module will provision a simple HTTP server as an ECS app used for Health Check (`/health`) for the Ingress Virtual Gateway
 module "ecs_app_heart_beat" {
-  #TODO: Won't work until ecs_appmesh_app has a public repo in launchbynttdata org
-  # source  = "terraform.registry.launch.nttdata.com/module_collection/ecs_appmesh_app/aws"
-  # version = "~> 1.0"
-  #TODO: Used for local testing against the main branch of the ecs_appmesh_app's repo
-  source = "../hackhackhack/"
+  source  = "terraform.registry.launch.nttdata.com/module_collection/ecs_appmesh_app/aws"
+  version = "~> 1.0"
 
   logical_product_family = var.logical_product_family
   # This is essential to keep unique IAM policy names
