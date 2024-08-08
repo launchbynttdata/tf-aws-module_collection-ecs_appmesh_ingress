@@ -130,7 +130,7 @@ module "alb" {
 
 module "alb_dns_records" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/dns_record/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   zone_id = var.dns_zone_id
   records = local.alb_dns_records
@@ -164,7 +164,7 @@ module "acm" {
 # Service Discovery services for Virtual Gateway
 module "sds" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   name         = module.resource_names["virtual_gateway"].standard
   namespace_id = var.namespace_id
@@ -175,7 +175,7 @@ module "sds" {
 # Create private certificate for virtual gateway
 module "private_certs" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   private_ca_arn = var.private_ca_arn
 
@@ -189,7 +189,7 @@ module "private_certs" {
 
 module "virtual_gateway" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_gateway/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   name      = module.resource_names["virtual_gateway"].standard
   mesh_name = var.app_mesh_id
@@ -376,7 +376,7 @@ module "virtual_gateway_ecs_service" {
 module "ecs_app_heart_beat" {
   #TODO: Won't work until ecs_appmesh_app has a public repo in launchbynttdata org
   # source  = "terraform.registry.launch.nttdata.com/module_collection/ecs_appmesh_app/aws"
-  # version = "~> 1.0.0"
+  # version = "~> 1.0"
   #TODO: Used for local testing against the main branch of the ecs_appmesh_app's repo
   source = "../hackhackhack/"
 
