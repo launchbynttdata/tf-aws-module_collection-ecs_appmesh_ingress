@@ -57,11 +57,11 @@ output "alb_http_listener_arns" {
 ## DNS and Certs
 
 output "dns_zone_id" {
-  description = "Zone ID of the hosted zone. Cannot be associated with CloudMap"
+  description = "Zone ID of the hosted zone"
   value       = try(module.alb_dns_records.dns_zone_id, "")
 }
 output "dns_zone_name" {
-  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true. Cannot be associated with CloudMap"
+  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true"
   value       = var.dns_zone_name
 }
 output "alb_dns_records" {

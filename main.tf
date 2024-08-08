@@ -132,12 +132,11 @@ module "alb_dns_records" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/dns_record/aws"
   version = "~> 1.0.0"
 
-  #This zone cannot be associated with CloudMap
   zone_id = var.dns_zone_id
   records = local.alb_dns_records
 }
 
-# DNS Zone where the records for the ALB will be created, cannot be associated with CloudMap
+# DNS Zone where the records for the ALB will be created
 data "aws_route53_zone" "dns_zone" {
   count = length(var.dns_zone_name) > 0 || var.use_https_listeners ? 1 : 0
 
@@ -153,7 +152,7 @@ module "acm" {
   count = var.use_https_listeners ? 1 : 0
 
   domain_name               = "${module.resource_names["alb"].recommended_per_length_restriction}.${var.dns_zone_name}"
-  subject_alternative_names = local.alb_san
+  subject_alternative_names = flatten(concat(local.alb_san, var.subject_alternate_names))
   zone_id                   = data.aws_route53_zone.dns_zone[count.index].zone_id
 
   tags = merge(local.tags, { resource_name = module.resource_names["acm"].standard })

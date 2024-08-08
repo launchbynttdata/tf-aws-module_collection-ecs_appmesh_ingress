@@ -101,14 +101,12 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 }
 
 
-func RequireEqualString(t *testing.T, expected string, actual string, resource_type string) bool {
+func RequireEqualString(t *testing.T, expected string, actual string, resource_type string) {
         require.Equal(t, expected, actual, "Expected %s to be %s, but got %s", resource_type, expected, actual)
-        return true
 }
 
-func RequireEqualBool(t *testing.T, expected bool, actual bool, resource_type string) bool {
+func RequireEqualBool(t *testing.T, expected bool, actual bool, resource_type string) {
         require.Equal(t, expected, actual, "Expected %s to be %s, but got %s", resource_type, expected, actual)
-        return true
 }
 
 func GetAWSAcmpcaClient(t *testing.T) *acmpca.Client {

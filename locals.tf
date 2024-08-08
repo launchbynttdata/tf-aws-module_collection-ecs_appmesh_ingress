@@ -51,7 +51,6 @@ locals {
       type = "A"
       name = local.alb_dns_name
       alias = {
-        # This zone_id must refer to a zone which is not managed by Cloud Map
         zone_id                = module.alb.lb_zone_id
         name                   = local.alb_dns_name
         evaluate_target_health = true

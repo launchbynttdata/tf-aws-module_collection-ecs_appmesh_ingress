@@ -247,7 +247,7 @@ variable "target_groups" {
 }
 
 variable "dns_zone_id" {
-  description = "Zone ID of the hosted zone. Cannot be associated with CloudMap"
+  description = "Zone ID of the hosted zone"
   type        = string
 }
 
@@ -258,7 +258,7 @@ variable "subject_alternate_names" {
 }
 
 variable "dns_zone_name" {
-  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true. Cannot be associated with CloudMap"
+  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true"
   type        = string
   default     = ""
 }
