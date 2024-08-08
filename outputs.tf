@@ -108,6 +108,16 @@ output "tls_enforce" {
   value       = var.tls_enforce
 }
 
+output "namespace_id" {
+  description = "ID of the Cloud Map namespace to be used for Service Discovery"
+  value       = module.sds.id
+}
+
+output "namespace_name" {
+  description = "Name of the Cloud Map namespace to be used for Service Discovery"
+  value       = var.namespace_name
+}
+
 output "heartbeat_app_task_definition_name" {
   description = "Task Definition Version of the HeartBeat application"
   value       = try(module.ecs_app_heart_beat.task_definition_name, "")

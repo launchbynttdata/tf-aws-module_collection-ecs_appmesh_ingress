@@ -69,7 +69,6 @@ locals {
   actual_domain_name  = "${module.resource_names["virtual_gateway"].standard}.${var.namespace_name}"
   updated_domain_name = length(local.actual_domain_name) < 64 ? local.actual_domain_name : "${var.logical_product_family}-${var.logical_product_service}.${var.namespace_name}"
   private_cert_san    = local.actual_domain_name != local.updated_domain_name ? [local.actual_domain_name] : []
-  private_cert_sans   = flatten(concat(local.private_cert_san, var.subject_alternate_names))
 
 
   # Role policies

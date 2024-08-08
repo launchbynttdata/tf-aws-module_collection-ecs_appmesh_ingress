@@ -307,6 +307,8 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="output_virtual_gateway_task_definition_version"></a> [virtual\_gateway\_task\_definition\_version](#output\_virtual\_gateway\_task\_definition\_version) | Revision of the Virtual Gateway ECS app task definition. |
 | <a name="output_virtual_gateway_name"></a> [virtual\_gateway\_name](#output\_virtual\_gateway\_name) | Name of the Virtual Gateway |
 | <a name="output_tls_enforce"></a> [tls\_enforce](#output\_tls\_enforce) | Whether TLS is enforced on the Virtual Gateway. If true, all the Virtual Nodes should also enable TLS |
+| <a name="output_namespace_id"></a> [namespace\_id](#output\_namespace\_id) | ID of the Cloud Map namespace to be used for Service Discovery |
+| <a name="output_namespace_name"></a> [namespace\_name](#output\_namespace\_name) | Name of the Cloud Map namespace to be used for Service Discovery |
 | <a name="output_heartbeat_app_task_definition_name"></a> [heartbeat\_app\_task\_definition\_name](#output\_heartbeat\_app\_task\_definition\_name) | Task Definition Version of the HeartBeat application |
 | <a name="output_heartbeat_app_task_definition_version"></a> [heartbeat\_app\_task\_definition\_version](#output\_heartbeat\_app\_task\_definition\_version) | Task Definition Version of the HeartBeat application |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

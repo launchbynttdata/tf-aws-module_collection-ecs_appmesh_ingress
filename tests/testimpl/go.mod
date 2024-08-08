@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/acmpca v1.35.0
 	github.com/aws/aws-sdk-go-v2/service/appmesh v1.27.3
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.146.0
+	github.com/aws/aws-sdk-go-v2/service/servicediscovery v1.27.6
 	github.com/gruntwork-io/terratest v0.47.0
 	github.com/launchbynttdata/lcaf-component-terratest v1.0.4
 	github.com/stretchr/testify v1.9.0

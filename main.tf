@@ -143,7 +143,6 @@ data "aws_route53_zone" "dns_zone" {
 
   name         = var.dns_zone_name
   private_zone = var.private_zone
-  vpc_id       = var.vpc_id
 }
 
 # Certificate Manager (not a private CA) where the certs for ALB will be provisioned
@@ -182,7 +181,7 @@ module "private_certs" {
   private_ca_arn = var.private_ca_arn
 
   domain_name               = local.updated_domain_name
-  subject_alternative_names = local.private_cert_sans
+  subject_alternative_names = local.private_cert_san
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
 
