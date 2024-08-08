@@ -32,12 +32,12 @@ func TestAppmeshIngressModule(t *testing.T) {
 		SetTestConfig(&testimpl.ThisTFModuleConfig{}).
 		SetTestConfigFolderName(testConfigsExamplesFolderDefault).
 		SetTestConfigFileName(infraTFVarFileNameDefault).
-/*		SetTestSpecificFlags(map[string]types.TestFlags{
+		SetTestSpecificFlags(map[string]types.TestFlags{
 			"with_tls_enforced": {
 				"IS_TERRAFORM_IDEMPOTENT_APPLY": false,
 			},
 		}).
-*/
+
 		Build()
 
 	lib.RunSetupTestTeardown(t, *ctx, testimpl.TestComposableComplete)
