@@ -221,7 +221,7 @@ module "ecs_task_execution_policy" {
   namespace                     = "${var.logical_product_family}-${join("", split("-", var.region))}"
   stage                         = var.instance_env
   environment                   = var.class_env
-  name                          = "${var.resource_names_map["task_exec_policy"].name}-${var.instance_resource}"
+  name                          = "${var.logical_product_family}-${var.logical_product_service}-${var.resource_names_map["task_exec_policy"].name}-${var.instance_resource}"
   iam_policy_enabled            = true
   iam_override_policy_documents = [var.ecs_exec_role_custom_policy_json]
 
@@ -239,7 +239,7 @@ module "ecs_task_policy" {
   namespace                   = "${var.logical_product_family}-${join("", split("-", var.region))}"
   stage                       = var.instance_env
   environment                 = var.class_env
-  name                        = "${var.resource_names_map["task_policy"].name}-${var.instance_resource}"
+  name                        = "${var.logical_product_family}-${var.logical_product_service}-${var.resource_names_map["task_policy"].name}-${var.instance_resource}"
   iam_policy_enabled          = true
   iam_source_policy_documents = local.ecs_role_custom_policy_json
 
@@ -380,7 +380,8 @@ module "ecs_app_heart_beat" {
   #TODO: Used for local testing against the main branch of the ecs_appmesh_app's repo
   source = "../hackhackhack/"
 
-  logical_product_family  = var.logical_product_family
+  logical_product_family = var.logical_product_family
+  # This is essential to keep unique IAM policy names
   logical_product_service = "hb"
   class_env               = var.class_env
   region                  = var.region
