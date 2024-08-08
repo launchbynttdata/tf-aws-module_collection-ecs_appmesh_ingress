@@ -1,4 +1,4 @@
-# Need to fill the properties within <> like zone_id, private_ca_arn, dns_zone_name, private_zone, app_image_tag, app_port
+# Need to fill the properties within <> like dns_zone_id, private_ca_arn, dns_zone_name, private_zone, app_image_tag, app_port
 # These above variables are made required so that the user must enter those
 
 interface_vpc_endpoints = {
@@ -61,10 +61,11 @@ alb_sg = {
   egress_cidr_blocks = ["0.0.0.0/0"]
 }
 
-#WARNING: zone_id and dns_zone_id must refer to the same zone and the zone cannot be one which is  managed by Cloud Map
-zone_id       = "<>"
-dns_zone_name = "<>"
-private_zone  = "<>" # bool
+#dns_zone_id and dns_zone_id must refer to the same zone and the zone cannot be one which is managed by Cloud Map
+dns_zone_id = "<dns_zone_id>"
+#dns_zone_name should be tied to a real domain known to Route 53
+dns_zone_name = "<dns_zone_name>"
+private_zone  = "<private_zone>" # bool
 
 force_new_deployment              = true
 health_check_grace_period_seconds = 120
@@ -91,18 +92,18 @@ vgw_security_group = {
   ]
 }
 
-app_image_tag = "<>"
-app_port      = "<>" # number
+app_image_tag = "<app_image_tag>"
+app_port      = "<app_port>" # number
 
-#app_security_group = {
-#  egress_rules        = ["all-all"]
-#  egress_cidr_blocks  = ["0.0.0.0/0"]
-#  ingress_cidr_blocks = ["0.0.0.0/0"]
-#  ingress_with_cidr_blocks = [
-#    {
-#      from_port = 8080
-#      to_port   = 8080
-#      protocol  = "tcp"
-#    }
-#  ]
-#}
+app_security_group = {
+  egress_rules        = ["all-all"]
+  egress_cidr_blocks  = ["0.0.0.0/0"]
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_with_cidr_blocks = [
+    {
+      from_port = 8080
+      to_port   = 8080
+      protocol  = "tcp"
+    }
+  ]
+}
