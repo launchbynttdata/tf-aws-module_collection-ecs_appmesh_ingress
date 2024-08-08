@@ -61,14 +61,13 @@ locals {
 
   # ACM cert doesnt allow first domain name > 64 chars. Hence, add a SAN for the standard name of ALB in-case the actual ALB name > 32 characters and a shortened name is used for ALB
   # We still would like to use the standard name in the custom A-record
-  alb_san = module.resource_names["alb"].recommended_per_length_restriction != module.resource_names["alb"].standard ? ["${module.resource_names["alb"].standard}.${var.dns_zone_name}"] : []
+  alb_san = module.resource_names["alb"].recommended_per_length_restriction != module.resource_names["alb"].standard ? [lower("${module.resource_names["alb"].standard}.${var.dns_zone_name}")] : []
 
   # Virtual gateway DNS records and cert
   # ACM first domain name must be < 64 characters
-  actual_domain_name  = "${module.resource_names["virtual_gateway"].standard}.${var.namespace_name}"
-  updated_domain_name = length(local.actual_domain_name) < 64 ? local.actual_domain_name : "${var.logical_product_family}-${var.logical_product_service}.${var.namespace_name}"
-  private_cert_san    = local.actual_domain_name != local.updated_domain_name ? [local.actual_domain_name] : []
-
+  actual_domain_name  = lower("${module.resource_names["virtual_gateway"].standard}.${var.namespace_name}")
+  updated_domain_name = length(local.actual_domain_name) < 64 ? lower(local.actual_domain_name) : lower("${var.logical_product_family}-${var.logical_product_service}.${var.namespace_name}")
+  private_cert_san    = local.actual_domain_name != local.updated_domain_name ? [lower(local.actual_domain_name)] : []
 
   # Role policies
 

@@ -140,7 +140,7 @@ module "alb_dns_records" {
 data "aws_route53_zone" "dns_zone" {
   count = length(var.dns_zone_name) > 0 || var.use_https_listeners ? 1 : 0
 
-  name         = var.dns_zone_name
+  name         = lower(var.dns_zone_name)
   private_zone = var.private_zone
 }
 
@@ -151,7 +151,7 @@ module "acm" {
 
   count = var.use_https_listeners ? 1 : 0
 
-  domain_name               = "${module.resource_names["alb"].recommended_per_length_restriction}.${var.dns_zone_name}"
+  domain_name               = lower("${module.resource_names["alb"].recommended_per_length_restriction}.${var.dns_zone_name}")
   subject_alternative_names = flatten(concat(local.alb_san, var.subject_alternate_names))
   zone_id                   = data.aws_route53_zone.dns_zone[count.index].zone_id
 
