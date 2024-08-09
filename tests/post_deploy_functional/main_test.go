@@ -33,7 +33,7 @@ func TestAppmeshIngressModule(t *testing.T) {
 		SetTestConfigFolderName(testConfigsExamplesFolderDefault).
 		SetTestConfigFileName(infraTFVarFileNameDefault).
 		SetTestSpecificFlags(map[string]types.TestFlags{
-			"with_tls_enforced": {
+			"complete_tls_enabled": {
 				"IS_TERRAFORM_IDEMPOTENT_APPLY": false,
 			},
 		}).
