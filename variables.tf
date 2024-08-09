@@ -260,7 +260,10 @@ variable "subject_alternate_names" {
 variable "dns_zone_name" {
   description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true"
   type        = string
-  default     = ""
+  validation {
+    condition     = can(regex("^[_\\-\\.a-z0-9]+$", var.dns_zone_name))
+    error_message = "The variable may only contain lowercase letters, numbers, -, _, and .."
+  }
 }
 
 variable "private_zone" {

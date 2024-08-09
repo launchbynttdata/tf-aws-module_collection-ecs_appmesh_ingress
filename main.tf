@@ -140,7 +140,7 @@ module "alb_dns_records" {
 data "aws_route53_zone" "dns_zone" {
   count = length(var.dns_zone_name) > 0 || var.use_https_listeners ? 1 : 0
 
-  name         = lower(var.dns_zone_name)
+  name         = var.dns_zone_name
   private_zone = var.private_zone
 }
 
