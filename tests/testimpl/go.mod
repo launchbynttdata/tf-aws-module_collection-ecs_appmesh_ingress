@@ -5,9 +5,12 @@ go 1.21.7
 require (
 	github.com/aws/aws-sdk-go-v2 v1.30.3
 	github.com/aws/aws-sdk-go-v2/config v1.27.27
+	github.com/aws/aws-sdk-go-v2/service/acm v1.22.7
 	github.com/aws/aws-sdk-go-v2/service/acmpca v1.35.0
 	github.com/aws/aws-sdk-go-v2/service/appmesh v1.27.3
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.174.0
+	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.34.0
+	github.com/aws/aws-sdk-go-v2/service/route53 v1.37.1
 	github.com/aws/aws-sdk-go-v2/service/servicediscovery v1.31.3
 	github.com/gruntwork-io/terratest v0.47.0
 	github.com/launchbynttdata/lcaf-component-terratest v1.0.4
