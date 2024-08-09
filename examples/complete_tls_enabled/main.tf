@@ -79,11 +79,13 @@ module "ecs_ingress" {
   private_zone  = var.private_zone
   dns_zone_id   = var.dns_zone_id
 
-  target_groups = [
-    {
-      backend_protocol = "https"
-      backend_port     = 443
-      target_type      = "ip"
+  target_groups = {
+    ecs_ingress = {
+      name_prefix = "albtg-"
+      protocol    = "HTTPS"
+      port        = 443
+      target_type = "ip"
+
       health_check = {
         port                = 443
         path                = "/health"
@@ -91,8 +93,16 @@ module "ecs_ingress" {
         unhealthy_threshold = 2
         protocol            = "HTTPS"
       }
+
+      # Poorly documented attribute in TF's alb module (9.x) which defaults true
+      # See https://github.com/terraform-aws-modules/terraform-aws-alb/blob/master/docs/patterns.md
+      # Theres nothing to attach here in this definition. Instead, ECS will attach the IPs of the tasks to this target group
+      create_attachment = false
+
+      # Still a mandatory attribute though
+      target_id = tostring(null)
     }
-  ]
+  }
 
   force_new_deployment              = var.force_new_deployment
   ignore_changes_desired_count      = false

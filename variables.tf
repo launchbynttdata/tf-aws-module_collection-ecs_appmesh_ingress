@@ -230,20 +230,34 @@ variable "alb_sg" {
 
 variable "target_groups" {
   description = <<EOT
-    List of target groups for the ALB"
+    Map of objects for target groups for the ALB"
     `target_type` can be ip, instance
-    `health_check` must be set for backend_protocol=HTTPS.
-    Valid health_check attributes are healthy_threshold, unhealthy_threshold, path, port, protocol
+    `health_check` must be set for protocol="HTTPS".
+    `target_id` is required unless create_attachment=false, but is a proper default for appmesh ALBs
+    Valid health_check attributes include healthy_threshold, unhealthy_threshold, path, port, protocol
       - protocol must be HTTP, HTTPS etc.
   EOT
-  type = list(object({
-    # Need to use name_prefix instead of name as the lifecycle property create_before_destroy is set
-    name_prefix      = optional(string, "albtg-")
-    backend_protocol = optional(string)
-    backend_port     = optional(number)
-    target_type      = optional(string)
-    health_check     = optional(map(string), {})
+  type = map(object({
+    name_prefix       = string
+    protocol          = string
+    port              = number
+    target_type       = string
+    health_check      = map(string)
+    create_attachment = optional(bool, false)
+    target_id         = optional(string, "")
   }))
+  default = {
+    "ecs_ingress" = {
+      # Need to use name_prefix instead of name as the lifecycle property create_before_destroy is set
+      name_prefix       = "albtg-"
+      protocol          = "HTTPS"
+      port              = 443
+      target_type       = "ip"
+      health_check      = {}
+      create_attachment = false
+      target_id         = ""
+    }
+  }
 }
 
 variable "dns_zone_id" {

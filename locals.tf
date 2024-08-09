@@ -38,12 +38,12 @@ locals {
 
   ] : []
 
-  # Inject tags to target group
-  target_groups = [for tg in var.target_groups : merge(tg, { tags = {
-    resource_name = module.resource_names["alb_tg"].standard
-  } })]
 
-  alb_dns_name = module.alb.lb_dns_name
+  tags          = merge(local.default_tags, var.tags)
+  tg_tags       = merge(local.tags, { resource_name = module.resource_names["alb_tg"].standard })
+  target_groups = merge(var.target_groups, { tags = local.tg_tags })
+
+  alb_dns_name = module.alb.dns_name
 
   # Need to construct the alb_dns_records as a map of object (alias A record)
   alb_dns_records = {
@@ -51,7 +51,7 @@ locals {
       type = "A"
       name = local.alb_dns_name
       alias = {
-        zone_id                = module.alb.lb_zone_id
+        zone_id                = module.alb.zone_id
         name                   = local.alb_dns_name
         evaluate_target_health = true
       }
@@ -169,6 +169,4 @@ EOF
     essential                = true
     readonly_root_filesystem = false
   }
-
-  tags = merge(local.default_tags, var.tags)
 }

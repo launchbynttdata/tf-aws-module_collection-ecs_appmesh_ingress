@@ -69,7 +69,7 @@ module "alb_logs_s3" {
 
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "~> 8.0"
+  version = "~> 9.10"
 
   name               = module.resource_names["alb"].recommended_per_length_restriction
   internal           = var.is_internal
@@ -90,37 +90,36 @@ module "alb" {
     prefix  = var.alb_logs_bucket_prefix
   }
 
-  # Target Group is set with `name_prefix` as create_before_destroy is set in the parent module
-  # health_check must be set for HTTPs target group
   target_groups = local.target_groups
 
-
-  # These values will always be fixed, hence hard-coded
-  #TODO: Unable to get the else condition working
-  http_tcp_listeners = var.use_https_listeners ? [
-    {
-      port        = 80
-      protocol    = "HTTP"
-      action_type = "redirect"
+  listeners = {
+    https_listeners = var.use_https_listeners ? {
+      port            = 443
+      protocol        = "HTTPS"
+      ssl_policy      = tostring(var.listener_ssl_policy_default)
+      certificate_arn = tostring(module.acm[0].acm_certificate_arn)
+      forward         = { target_group_key = local.target_groups }
+      tags            = merge(local.tags, { resource_name = module.resource_names["alb"].standard })
+      } : {
+      port            = tonumber(null)
+      protocol        = tostring(null)
+      ssl_policy      = tostring(null)
+      certificate_arn = tostring(null)
+      forward         = { target_group_key = null }
+      tags            = tomap({})
+    }
+    http-https-redirect = {
+      # These values will always be fixed, hence hard-coded
+      port     = 80
+      protocol = "HTTP"
       redirect = {
         port        = 443
         protocol    = "HTTPS"
         status_code = "HTTP_301"
       }
+      tags = merge(local.tags, { resource_name = module.resource_names["alb"].standard })
     }
-    ] : [
-
-  ]
-
-  https_listeners = var.use_https_listeners ? [{
-    port               = 443
-    protocol           = "HTTPS"
-    target_group_index = 0
-    certificate_arn    = module.acm[0].acm_certificate_arn
-    ssl_policy         = var.listener_ssl_policy_default
-  }] : []
-
-  http_tcp_listeners_tags = merge(local.tags, { resource_name = module.resource_names["alb"].standard })
+  }
 
   tags = merge(local.tags, { resource_name = module.resource_names["acm"].standard })
 
@@ -276,8 +275,8 @@ module "sg_ecs_service_vgw" {
   computed_ingress_with_source_security_group_id = concat([
     {
       # Allow ingress from ALB on the health check port of target group (virtual gateway listener)
-      from_port                = try(lookup(var.target_groups[0].health_check, "port"), 443)
-      to_port                  = try(lookup(var.target_groups[0].health_check, "port"), 443)
+      from_port                = try(lookup(var.target_groups["ecs_ingress"].health_check, "port"), 443)
+      to_port                  = try(lookup(var.target_groups["ecs_ingress"].health_check, "port"), 443)
       protocol                 = "tcp"
       source_security_group_id = module.sg_alb.security_group_id
     }
@@ -286,8 +285,8 @@ module "sg_ecs_service_vgw" {
   computed_egress_with_source_security_group_id = concat([
     {
       # Allow egress from ALB on the health check port of target group (virtual gateway listener)
-      from_port                = try(lookup(var.target_groups[0].health_check, "port"), 443)
-      to_port                  = try(lookup(var.target_groups[0].health_check, "port"), 443)
+      from_port                = try(lookup(var.target_groups["ecs_ingress"].health_check, "port"), 443)
+      to_port                  = try(lookup(var.target_groups["ecs_ingress"].health_check, "port"), 443)
       protocol                 = "tcp"
       source_security_group_id = module.sg_alb.security_group_id
     }
@@ -358,7 +357,7 @@ module "virtual_gateway_ecs_service" {
     {
       container_name   = local.vgw_container.name
       container_port   = local.vgw_container.port_mappings[0].containerPort
-      target_group_arn = module.alb.target_group_arns[0]
+      target_group_arn = local.target_groups["ecs_ingress"]
       # If target_group is specified, elb_name must be null
       elb_name = null
     }
