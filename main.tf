@@ -69,7 +69,7 @@ module "alb_logs_s3" {
 
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "~> 9.10"
+  version = "~> 9.10.0"
 
   name               = module.resource_names["alb"].recommended_per_length_restriction
   internal           = var.is_internal
@@ -275,8 +275,8 @@ module "sg_ecs_service_vgw" {
   computed_ingress_with_source_security_group_id = concat([
     {
       # Allow ingress from ALB on the health check port of target group (virtual gateway listener)
-      from_port                = try(lookup(var.target_groups["ecs_ingress"].health_check, "port"), 443)
-      to_port                  = try(lookup(var.target_groups["ecs_ingress"].health_check, "port"), 443)
+      from_port                = try(lookup(var.target_groups.ecs.health_check, "port"), 443)
+      to_port                  = try(lookup(var.target_groups.ecs.health_check, "port"), 443)
       protocol                 = "tcp"
       source_security_group_id = module.sg_alb.security_group_id
     }
@@ -285,8 +285,8 @@ module "sg_ecs_service_vgw" {
   computed_egress_with_source_security_group_id = concat([
     {
       # Allow egress from ALB on the health check port of target group (virtual gateway listener)
-      from_port                = try(lookup(var.target_groups["ecs_ingress"].health_check, "port"), 443)
-      to_port                  = try(lookup(var.target_groups["ecs_ingress"].health_check, "port"), 443)
+      from_port                = try(lookup(var.target_groups.ecs.health_check, "port"), 443)
+      to_port                  = try(lookup(var.target_groups.ecs.health_check, "port"), 443)
       protocol                 = "tcp"
       source_security_group_id = module.sg_alb.security_group_id
     }
@@ -357,7 +357,7 @@ module "virtual_gateway_ecs_service" {
     {
       container_name   = local.vgw_container.name
       container_port   = local.vgw_container.port_mappings[0].containerPort
-      target_group_arn = local.target_groups["ecs_ingress"]
+      target_group_arn = module.alb.arn
       # If target_group is specified, elb_name must be null
       elb_name = null
     }

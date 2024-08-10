@@ -233,7 +233,7 @@ variable "target_groups" {
     Map of objects for target groups for the ALB"
     `target_type` can be ip, instance
     `health_check` must be set for protocol="HTTPS".
-    `target_id` is required unless create_attachment=false, but is a proper default for appmesh ALBs
+    `target_id` is optional when `create_attachment` is false
     Valid health_check attributes include healthy_threshold, unhealthy_threshold, path, port, protocol
       - protocol must be HTTP, HTTPS etc.
   EOT
@@ -244,10 +244,11 @@ variable "target_groups" {
     target_type       = string
     health_check      = map(string)
     create_attachment = optional(bool, false)
-    target_id         = optional(string, "")
+    target_id         = optional(string)
+    tags              = optional(map(string))
   }))
   default = {
-    "ecs_ingress" = {
+    ecs = {
       # Need to use name_prefix instead of name as the lifecycle property create_before_destroy is set
       name_prefix       = "albtg-"
       protocol          = "HTTPS"
@@ -255,8 +256,13 @@ variable "target_groups" {
       target_type       = "ip"
       health_check      = {}
       create_attachment = false
-      target_id         = ""
     }
+  }
+  validation {
+    condition = alltrue(
+      [for tg, obj in var.target_groups : ((obj.target_id == null) ? (obj.create_attachment == false) : (obj.create_attachment == true))]
+    )
+    error_message = "Either target_id must be set or create_attachment must be false"
   }
 }
 
