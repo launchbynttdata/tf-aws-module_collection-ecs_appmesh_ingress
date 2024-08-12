@@ -81,4 +81,5 @@ This example will provision a AppMesh ingress along with all its dependencies.
 | <a name="output_dns_zone_name"></a> [dns\_zone\_name](#output\_dns\_zone\_name) | n/a |
 | <a name="output_dns_zone_id"></a> [dns\_zone\_id](#output\_dns\_zone\_id) | n/a |
 | <a name="output_private_ca_arn"></a> [private\_ca\_arn](#output\_private\_ca\_arn) | n/a |
+| <a name="output_alb_arn"></a> [alb\_arn](#output\_alb\_arn) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

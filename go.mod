@@ -1,4 +1,4 @@
-module github.com/launchbynttdata/tf-aws-module-ecs_appmesh_ingress.git
+module github.com/launchbynttdata/tf-aws-module-ecs_appmesh_ingress
 
 go 1.21.7
 
