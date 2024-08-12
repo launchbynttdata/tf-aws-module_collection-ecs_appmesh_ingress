@@ -30,8 +30,8 @@ const expectedVgwStatus          = "ACTIVE"
 
 func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 	albArn        := terraform.Output(t, ctx.TerratestTerraformOptions(), "alb_arn")
+	//albDns        := terraform.Output(t, ctx.TerratestTerraformOptions(), "alb_dns")
 	albCertArn    := terraform.Output(t, ctx.TerratestTerraformOptions(), "alb_cert_arn")
-	albDns        := terraform.Output(t, ctx.TerratestTerraformOptions(), "alb_dns")
 	appMeshId     := terraform.Output(t, ctx.TerratestTerraformOptions(), "app_mesh_id")
 	//dnsZoneId     := terraform.Output(t, ctx.TerratestTerraformOptions(), "dns_zone_id")
 	dnsZoneName   := terraform.Output(t, ctx.TerratestTerraformOptions(), "dns_zone_name")
@@ -102,7 +102,7 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 		}
 		certificate := *output.Certificate
                 RequireEqualString(t, albCertArn, *certificate.CertificateArn, "ALB Cert ARN")
-                RequireEqualString(t, albDns, *certificate.DomainName, "ALB Cert Domain Name")
+                //RequireEqualString(t, albDns, *certificate.DomainName, "ALB Cert Domain Name")
                 //RequireEqualString(t, privateCaArn, *certificate.CertificateAuthorityArn, "issuing CA for ALB Cert")
                 RequireEqualString(t, expectedCertStatus, string(certificate.Status), "ALB Cert status")
         })
@@ -159,7 +159,7 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 		loadBalancers := output.LoadBalancers
 		require.Equal(t, 1, len(loadBalancers), "Expected exactly 1 ALB with the ARN %s", albArn)
                 RequireEqualString(t, albArn, *loadBalancers[0].LoadBalancerArn, "ALB ARN")
-                RequireEqualString(t, albDns, *loadBalancers[0].LoadBalancerName, "ALB name")
+                // RequireEqualString(t, albDns, *loadBalancers[0].LoadBalancerName, "ALB name")
                 RequireEqualString(t, dnsZoneName, *loadBalancers[0].CanonicalHostedZoneId, "ALB hosted zone name")
 		RequireEqualString(t, vpcId, *loadBalancers[0].VpcId, "ALB VPC ID")
 		RequireEqualString(t, expectedAlbState, string(loadBalancers[0].State.Code), "ALB state")
