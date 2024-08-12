@@ -218,8 +218,6 @@ github.com/aws/aws-sdk-go-v2/internal/ini v1.8.0 h1:hT8rVHwugYE2lEfdFE0QWVo81lF7
 github.com/aws/aws-sdk-go-v2/internal/ini v1.8.0/go.mod h1:8tu/lYfQfFe6IGnaOdrpVgEL2IrrDOf6/m9RQum4NkY=
 github.com/aws/aws-sdk-go-v2/service/acm v1.22.7 h1:fg4SCoQgLTFfpS+QlL7mSECbBtUi4+EitfXIS8guFyw=
 github.com/aws/aws-sdk-go-v2/service/acm v1.22.7/go.mod h1:Dj5H0DVkRF9Eimq2uLZhkfWim/F7as1K+BFicHg2qq8=
-github.com/aws/aws-sdk-go-v2/service/acmpca v1.35.0 h1:GZ7eaCsYZar0pOQPzBJeP8ImFEzDpPFbJ52JCiF9HQ4=
-github.com/aws/aws-sdk-go-v2/service/acmpca v1.35.0/go.mod h1:vDUysl9ROGF6GAsl1OgTg6xHDnw391hCc5+IYg2U/GQ=
 github.com/aws/aws-sdk-go-v2/service/appmesh v1.27.3 h1:UorKcN0SsvTcL4CGZsh2xcK3H+zP09us6NgS2g5MFIU=
 github.com/aws/aws-sdk-go-v2/service/appmesh v1.27.3/go.mod h1:Jei7cWyXVkr10MXWBHbbFDIzDWEsVRGDicGNE2Kh05M=
 github.com/aws/aws-sdk-go-v2/service/ec2 v1.174.0 h1:xY25etxTt0mYfWVWv8DjIUcJQyX2cwBeInpIvg6Sbsw=
@@ -230,8 +228,6 @@ github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.11.3 h1:dT3MqvG
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.11.3/go.mod h1:GlAeCkHwugxdHaueRr4nhPuY+WW+gR8UjlcqzPr1SPI=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.17 h1:HGErhhrxZlQ044RiM+WdoZxp0p+EGM62y3L6pwA4olE=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.17/go.mod h1:RkZEx4l0EHYDJpWppMJ3nD9wZJAa8/0lq9aVC+r2UII=
-github.com/aws/aws-sdk-go-v2/service/route53 v1.37.1 h1:U7OksynDSIFScG+7sGqOuJh+fP1USMkNtjxzGFZYG34=
-github.com/aws/aws-sdk-go-v2/service/route53 v1.37.1/go.mod h1:8qqfpG4mug2JLlEyWPSFhEGvJiaZ9iPmMDDMYc5Xtas=
 github.com/aws/aws-sdk-go-v2/service/servicediscovery v1.31.3 h1:EthA93BNgTnk36FoI9DCKtv4S0m63WzdGDYlBp/CvHQ=
 github.com/aws/aws-sdk-go-v2/service/servicediscovery v1.31.3/go.mod h1:4xh/h0pevPhBkA4b2iYosZaqrThccxFREQxiGuZpJlc=
 github.com/aws/aws-sdk-go-v2/service/sso v1.22.4 h1:BXx0ZIxvrJdSgSvKTZ+yRBeSqqgPM89VPlulEcl37tM=

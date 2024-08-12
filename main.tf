@@ -207,6 +207,7 @@ module "virtual_gateway" {
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
 
+  depends_on = [module.private_certs]
 }
 
 module "ecs_task_execution_policy" {
@@ -367,7 +368,7 @@ module "virtual_gateway_ecs_service" {
 
   #Temporary attempt to work around the following:
   # Error: creating App Mesh Virtual Node (launch-hb-useast2-dev-000-vnode-000): BadRequestException: Service Discovery can't be set without a listener.
-  depends_on = [module.sds, module.virtual_gateway_container_definition, module.sg_ecs_service_vgw, module.alb]
+  depends_on = [module.virtual_gateway, module.sds, module.virtual_gateway_container_definition, module.sg_ecs_service_vgw, module.alb]
 }
 
 # This module will provision a simple HTTP server as an ECS app used for Health Check (`/health`) for the Ingress Virtual Gateway
