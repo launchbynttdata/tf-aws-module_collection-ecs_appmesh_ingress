@@ -69,7 +69,7 @@ module "alb_logs_s3" {
 
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "~> 8.0"
+  version = "~> 8.7"
 
   name               = module.resource_names["alb"].recommended_per_length_restriction
   internal           = var.is_internal
