@@ -291,8 +291,8 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="output_resource_names"></a> [resource\_names](#output\_resource\_names) | A map of resource\_name\_types to generated resource names used in this module |
 | <a name="output_app_sg_id"></a> [app\_sg\_id](#output\_app\_sg\_id) | The ID of the VPC Endpoint Security Group |
 | <a name="output_alb_dns"></a> [alb\_dns](#output\_alb\_dns) | AWS provided DNS record of the ALB |
-| <a name="output_alb_arn"></a> [alb\_arn](#output\_alb\_arn) | ARN of the ALB |
-| <a name="output_alb_id"></a> [alb\_id](#output\_alb\_id) | ID of the ALB |
+| <a name="output_alb_arn"></a> [alb\_arn](#output\_alb\_arn) | The ID and ARN of the application load balancer we created |
+| <a name="output_alb_id"></a> [alb\_id](#output\_alb\_id) | The ID and ARN of the application load balancer we created |
 | <a name="output_alb_sg_id"></a> [alb\_sg\_id](#output\_alb\_sg\_id) | ID of the ALB Security Group |
 | <a name="output_alb_https_listener_arns"></a> [alb\_https\_listener\_arns](#output\_alb\_https\_listener\_arns) | ARNs of the HTTPs Listeners attached to the ALB |
 | <a name="output_alb_http_listener_arns"></a> [alb\_http\_listener\_arns](#output\_alb\_http\_listener\_arns) | ARNs of the HTTP Listeners attached to the ALB |

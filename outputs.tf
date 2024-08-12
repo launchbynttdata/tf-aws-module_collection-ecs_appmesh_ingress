@@ -30,13 +30,13 @@ output "alb_dns" {
 }
 
 output "alb_arn" {
-  description = "ARN of the ALB"
-  value       = module.alb.lb_arn
+  description = "The ID and ARN of the application load balancer we created"
+  value       = try(module.alb.lb_arn, module.alb.lb_id)
 }
 
 output "alb_id" {
-  description = "ID of the ALB"
-  value       = module.alb.lb_id
+  description = "The ID and ARN of the application load balancer we created"
+  value       = try(module.alb.lb_id, module.alb.lb_arn)
 }
 
 output "alb_sg_id" {
