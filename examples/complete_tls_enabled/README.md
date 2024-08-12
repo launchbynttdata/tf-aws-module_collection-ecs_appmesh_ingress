@@ -75,11 +75,18 @@ This example will provision a AppMesh ingress along with all its dependencies.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at  http://www.apache.org/licenses/LICENSE-2.0  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. |
+| <a name="output_alb_arn"></a> [alb\_arn](#output\_alb\_arn) | Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at  http://www.apache.org/licenses/LICENSE-2.0  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. |
+| <a name="output_alb_cert_arn"></a> [alb\_cert\_arn](#output\_alb\_cert\_arn) | n/a |
+| <a name="output_alb_dns"></a> [alb\_dns](#output\_alb\_dns) | n/a |
+| <a name="output_alb_id"></a> [alb\_id](#output\_alb\_id) | n/a |
 | <a name="output_app_mesh_id"></a> [app\_mesh\_id](#output\_app\_mesh\_id) | n/a |
-| <a name="output_namespace_name"></a> [namespace\_name](#output\_namespace\_name) | n/a |
-| <a name="output_dns_zone_name"></a> [dns\_zone\_name](#output\_dns\_zone\_name) | n/a |
 | <a name="output_dns_zone_id"></a> [dns\_zone\_id](#output\_dns\_zone\_id) | n/a |
+| <a name="output_dns_zone_name"></a> [dns\_zone\_name](#output\_dns\_zone\_name) | n/a |
+| <a name="output_namespace_id"></a> [namespace\_id](#output\_namespace\_id) | n/a |
+| <a name="output_namespace_name"></a> [namespace\_name](#output\_namespace\_name) | n/a |
 | <a name="output_private_ca_arn"></a> [private\_ca\_arn](#output\_private\_ca\_arn) | n/a |
-| <a name="output_alb_arn"></a> [alb\_arn](#output\_alb\_arn) | n/a |
+| <a name="output_virtual_gateway_arn"></a> [virtual\_gateway\_arn](#output\_virtual\_gateway\_arn) | n/a |
+| <a name="output_virtual_gateway_cert_arn"></a> [virtual\_gateway\_cert\_arn](#output\_virtual\_gateway\_cert\_arn) | n/a |
+| <a name="output_virtual_gateway_name"></a> [virtual\_gateway\_name](#output\_virtual\_gateway\_name) | n/a |
+| <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
