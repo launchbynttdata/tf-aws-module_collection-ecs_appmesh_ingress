@@ -183,8 +183,6 @@ module "private_certs" {
   subject_alternative_names = local.private_cert_san
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
-
-  depends_on = [module.acm]
 }
 
 module "virtual_gateway" {
