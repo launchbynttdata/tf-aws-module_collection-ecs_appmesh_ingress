@@ -26,7 +26,7 @@ output "app_sg_id" {
 
 output "alb_dns" {
   description = "AWS provided DNS record of the ALB"
-  value       = module.alb.lb_dns_name
+  value       = local.alb_dns_name
 }
 
 output "alb_arn" {
@@ -58,15 +58,15 @@ output "alb_http_listener_arns" {
 
 output "dns_zone_id" {
   description = "Zone ID of the hosted zone"
-  value       = try(module.alb_dns_records.dns_zone_id, "")
+  value       = try(module.alb_dns_records[0].alias.zone_id, "")
 }
 output "dns_zone_name" {
   description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true"
-  value       = var.dns_zone_name
+  value       = try(local.dns_zone_name, "")
 }
 output "alb_dns_records" {
   description = "Custom DNS record for the ALB"
-  value       = try(module.alb_dns_records[0].record_fqdns, "")
+  value       = try(module.alb_dns_records[0].alias.name, "")
 }
 output "private_ca_arn" {
   description = "ARN of the Private CA. This is used to sign private certificates used in App Mesh. Required when TLS is enabled in App Mesh"
@@ -115,7 +115,7 @@ output "namespace_id" {
 
 output "namespace_name" {
   description = "Name of the Cloud Map namespace to be used for Service Discovery"
-  value       = var.namespace_name
+  value       = try(module.ecs_app_heart_beat.namespace_name, "")
 }
 
 output "heartbeat_app_task_definition_name" {

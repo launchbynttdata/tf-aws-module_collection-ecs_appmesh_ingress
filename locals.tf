@@ -43,7 +43,8 @@ locals {
     resource_name = module.resource_names["alb_tg"].standard
   } })]
 
-  alb_dns_name = module.alb.lb_dns_name
+  alb_dns_name  = lower(module.alb.lb_dns_name)
+  dns_zone_name = lower(var.dns_zone_name)
 
   # Need to construct the alb_dns_records as a map of object (alias A record)
   alb_dns_records = {

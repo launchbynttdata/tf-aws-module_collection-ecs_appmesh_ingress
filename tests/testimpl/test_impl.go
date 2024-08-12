@@ -34,7 +34,7 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 	albCertArn    := terraform.Output(t, ctx.TerratestTerraformOptions(), "alb_cert_arn")
 	appMeshId     := terraform.Output(t, ctx.TerratestTerraformOptions(), "app_mesh_id")
 	//dnsZoneId     := terraform.Output(t, ctx.TerratestTerraformOptions(), "dns_zone_id")
-	dnsZoneName   := terraform.Output(t, ctx.TerratestTerraformOptions(), "dns_zone_name")
+	//dnsZoneName   := terraform.Output(t, ctx.TerratestTerraformOptions(), "dns_zone_name")
 	namespaceId   := terraform.Output(t, ctx.TerratestTerraformOptions(), "namespace_id")
 	namespaceName := terraform.Output(t, ctx.TerratestTerraformOptions(), "namespace_name")
 	//privateCaArn  := terraform.Output(t, ctx.TerratestTerraformOptions(), "private_ca_arn")
@@ -102,7 +102,6 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 		}
 		certificate := *output.Certificate
                 RequireEqualString(t, albCertArn, *certificate.CertificateArn, "ALB Cert ARN")
-                //RequireEqualString(t, albDns, *certificate.DomainName, "ALB Cert Domain Name")
                 //RequireEqualString(t, privateCaArn, *certificate.CertificateAuthorityArn, "issuing CA for ALB Cert")
                 RequireEqualString(t, expectedCertStatus, string(certificate.Status), "ALB Cert status")
         })
@@ -129,7 +128,7 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
         })
 
 
-        /* route53Client := GetAWSRoute53Client(t)
+        /*route53Client := GetAWSRoute53Client(t)
 	t.Run("TestHostedZone", func(t *testing.T) {
 		output, err := route53Client.GetHostedZone(context.TODO(), &route53.GetHostedZoneInput{Id: &dnsZoneId})
                 if err != nil {
@@ -147,7 +146,7 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
                 require.Equal(t, albDns, strings.ToLower(albDns), "ALB DNS record is using mixed case, expected all lower case")
 		//  When listing w/ both record name and record type as inputs, it will be the first record set returned, if found
 		require.Equal(t, output.ResourceRecordSets[0].Name, albDns, "ALB DNS record %s was not found in hosted zone %s (%s)", albDns, dnsZoneName, dnsZoneId)
-        })  */
+        })*/
 
 
         elbv2Client := GetAWSElbv2Client(t)
@@ -159,8 +158,6 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 		loadBalancers := output.LoadBalancers
 		require.Equal(t, 1, len(loadBalancers), "Expected exactly 1 ALB with the ARN %s", albArn)
                 RequireEqualString(t, albArn, *loadBalancers[0].LoadBalancerArn, "ALB ARN")
-                // RequireEqualString(t, albDns, *loadBalancers[0].LoadBalancerName, "ALB name")
-                RequireEqualString(t, dnsZoneName, *loadBalancers[0].CanonicalHostedZoneId, "ALB hosted zone name")
 		RequireEqualString(t, vpcId, *loadBalancers[0].VpcId, "ALB VPC ID")
 		RequireEqualString(t, expectedAlbState, string(loadBalancers[0].State.Code), "ALB state")
         })
