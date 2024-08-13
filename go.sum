@@ -467,6 +467,8 @@ github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/launchbynttdata/lcaf-component-terratest v1.0.4 h1:uSnkCKT30Ua5ySJIusNDYsG2sHa71nVn+3N8mV9e5fc=
 github.com/launchbynttdata/lcaf-component-terratest v1.0.4/go.mod h1:olva1OkdJd+5ToVT+lLP05kYln6aFu7rSosPVep29sw=
+github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_ingress/tests/testimpl v0.0.0-20240813192443-1125bc85747f h1:yKYkczvjBXTvSEsgMTkT+HMSeUIsJJ+q+EZke8Mmhbg=
+github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_ingress/tests/testimpl v0.0.0-20240813192443-1125bc85747f/go.mod h1:USZ6h7zcEP0wBy2RpdK0qPclzXk1p8o4Pvqtx4qDi6w=
 github.com/mailru/easyjson v0.7.7 h1:UGYAvKxe3sBsEDzO8ZeWOSlIQfWFlxbzLZe7hwFURr0=
 github.com/mailru/easyjson v0.7.7/go.mod h1:xzfreul335JAWq5oZzymOObrkdz5UnU4kGfJJLY9Nlc=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
