@@ -9,6 +9,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-output "vpc_id" {
-  value = module.vpc.vpc_id
+
+terraform {
+  required_version = ">= 1.5.0, < 1.6"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 3.5.1"
+    }
+  }
 }

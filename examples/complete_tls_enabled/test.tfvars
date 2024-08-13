@@ -1,14 +1,12 @@
-# Need to fill the properties within <> like private_ca_arn, dns_zone_name, private_zone, app_image_tag, app_port
+# Need to fill the properties within <> like dns_zone_id, private_ca_arn, dns_zone_name, private_zone, app_image_tag, app_port
 # These above variables are made required so that the user must enter those
 
-naming_prefix = "demo"
-
 interface_vpc_endpoints = {
-  ecr-dkr = {
+  ecrdkr = {
     service_name        = "ecr.dkr"
     private_dns_enabled = true
   }
-  ecr-api = {
+  ecrapi = {
     service_name        = "ecr.api"
     private_dns_enabled = true
   }
@@ -20,7 +18,7 @@ interface_vpc_endpoints = {
     service_name        = "logs"
     private_dns_enabled = true
   }
-  appmesh-envoy-mgmt = {
+  appmeshenvoymgmt = {
     service_name        = "appmesh-envoy-management"
     private_dns_enabled = true
   }
@@ -39,14 +37,14 @@ gateway_vpc_endpoints = {
 
 vpce_security_group = {
   ingress_rules       = ["https-443-tcp", "http-80-tcp"]
-  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_cidr_blocks = ["10.1.0.0/16"]
   egress_rules        = ["all-all"]
   egress_cidr_blocks  = ["0.0.0.0/0"]
 }
 
 alb_sg = {
   description         = "Security group for ALB"
-  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_cidr_blocks = ["10.1.0.0/16"]
   ingress_with_cidr_blocks = [
     {
       from_port = 443
@@ -63,13 +61,16 @@ alb_sg = {
   egress_cidr_blocks = ["0.0.0.0/0"]
 }
 
-dns_zone_name = "<dns_zone_name>"
+# dns_zone_id and dns_zone_id must refer to the same zone
+dns_zone_id = "Z0784995304VEG2Z7RSRF"
+# dns_zone_name should be tied to a real domain known to Route 53
+dns_zone_name = "sandbox.launch.nttdata.com"
 private_zone  = false
 
 force_new_deployment              = true
 health_check_grace_period_seconds = 120
 
-private_ca_arn = "<private_ca_arn>"
+private_ca_arn = "arn:aws:acm-pca:us-east-2:020127659860:certificate-authority/aae3aa9a-a2d0-42ac-a16b-0fc6d54b109c"
 
 # Virtual gateway
 
@@ -91,7 +92,7 @@ vgw_security_group = {
   ]
 }
 
-app_image_tag = "<image_tag>"
+app_image_tag = "public.ecr.aws/nginx/nginx:latest"
 app_port      = 8080
 
 app_security_group = {

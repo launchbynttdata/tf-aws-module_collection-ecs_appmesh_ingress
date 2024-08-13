@@ -11,9 +11,7 @@
 // limitations under the License.
 
 locals {
-  random_id             = random_integer.priority.result
-  naming_prefix         = "${var.logical_product_family}-${var.logical_product_service}-${local.random_id}"
-  ingress_naming_prefix = "${var.logical_product_family}-${var.logical_product_service}-ing-${local.random_id}"
-  vpc_name              = "${local.naming_prefix}-vpc"
-  namespace_name        = "${local.naming_prefix}.local"
+  random_id      = random_integer.priority.result
+  vpc_name       = "${var.logical_product_family}-${var.logical_product_service}-vpc-${local.random_id}"
+  namespace_name = "${var.logical_product_family}-${var.logical_product_service}.${var.dns_zone_name}"
 }

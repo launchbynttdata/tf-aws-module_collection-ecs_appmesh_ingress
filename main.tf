@@ -10,12 +10,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-data "aws_vpc" "vpc" {
-  id = var.vpc_id
-}
-
 module "resource_names" {
-  source = "git::https://github.com/launchbynttdata/tf-launch-module_library-resource_name.git?ref=1.0.1"
+  source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
+  version = "~> 1.0"
 
   for_each = var.resource_names_map
 
@@ -72,12 +69,13 @@ module "alb_logs_s3" {
 
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "~> 8.0"
+  version = "~> 8.7"
 
   name               = module.resource_names["alb"].recommended_per_length_restriction
   internal           = var.is_internal
   load_balancer_type = var.load_balancer_type
-  # SG is created by separate module
+
+  #SG is created by separate module
   create_security_group = false
   idle_timeout          = var.idle_timeout
 
@@ -124,13 +122,15 @@ module "alb" {
 
   http_tcp_listeners_tags = merge(local.tags, { resource_name = module.resource_names["alb"].standard })
 
-  tags = merge(local.tags, { resource_name = module.resource_names["alb"].standard })
+  tags = merge(local.tags, { resource_name = module.resource_names["acm"].standard })
 
   depends_on = [module.alb_logs_s3]
 }
 
-module "alb_dns_record" {
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-dns_record"
+
+module "alb_dns_records" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/dns_record/aws"
+  version = "~> 1.0"
 
   zone_id = var.dns_zone_id
   records = local.alb_dns_records
@@ -144,24 +144,27 @@ data "aws_route53_zone" "dns_zone" {
   private_zone = var.private_zone
 }
 
-# Certificate Manager where the certs for ALB will be provisioned
+# Certificate Manager (not a private CA) where the certs for ALB will be provisioned
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
   version = "~> 4.3.2"
 
   count = var.use_https_listeners ? 1 : 0
 
-  # First domain name must be < 64 chars
-  domain_name               = "${module.resource_names["alb"].recommended_per_length_restriction}.${var.dns_zone_name}"
-  subject_alternative_names = concat(local.san, var.subject_alternate_names)
+  domain_name               = lower("${module.resource_names["alb"].recommended_per_length_restriction}.${var.dns_zone_name}")
+  subject_alternative_names = flatten(concat(local.alb_san, var.subject_alternate_names))
   zone_id                   = data.aws_route53_zone.dns_zone[count.index].zone_id
 
   tags = merge(local.tags, { resource_name = module.resource_names["acm"].standard })
+
+  # Can't validate the SANs if they aren't in the dns_records
+  depends_on = [module.alb_dns_records]
 }
 
 # Service Discovery services for Virtual Gateway
 module "sds" {
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-service_discovery_service.git?ref=1.0.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws"
+  version = "~> 1.0"
 
   name         = module.resource_names["virtual_gateway"].standard
   namespace_id = var.namespace_id
@@ -169,12 +172,13 @@ module "sds" {
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
 }
 
-# Create private certificates for virtual gateway
+# Create private certificate for virtual gateway
 module "private_certs" {
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-acm_private_cert.git?ref=1.0.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws"
+  version = "~> 1.0"
 
   private_ca_arn = var.private_ca_arn
-  # Must be < 64
+
   domain_name               = local.updated_domain_name
   subject_alternative_names = local.private_cert_san
 
@@ -182,7 +186,8 @@ module "private_certs" {
 }
 
 module "virtual_gateway" {
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-virtual_gateway.git?ref=1.0.1"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_gateway/aws"
+  version = "~> 1.0"
 
   name      = module.resource_names["virtual_gateway"].standard
   mesh_name = var.app_mesh_id
@@ -202,39 +207,49 @@ module "virtual_gateway" {
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
 
+  depends_on = [module.private_certs]
 }
 
 module "ecs_task_execution_policy" {
   count = length(var.ecs_exec_role_custom_policy_json) > 0 ? 1 : 0
 
   source  = "cloudposse/iam-policy/aws"
-  version = "~> 0.4.0"
+  version = "~> 2.0.1"
 
   enabled                       = true
   namespace                     = "${var.logical_product_family}-${join("", split("-", var.region))}"
   stage                         = var.instance_env
   environment                   = var.class_env
-  name                          = "${var.resource_names_map["task_exec_policy"].name}-${var.instance_resource}"
+  name                          = "${var.logical_product_family}-${var.logical_product_service}-${var.resource_names_map["task_exec_policy"].name}-${var.instance_resource}"
   iam_policy_enabled            = true
   iam_override_policy_documents = [var.ecs_exec_role_custom_policy_json]
+
+  tags = local.tags
+
+  # Attempts to avoid 409 concurrency issue with IAM policies
+  depends_on = [module.alb_logs_s3]
 }
 
 module "ecs_task_policy" {
-
   source  = "cloudposse/iam-policy/aws"
-  version = "~> 0.4.0"
+  version = "~> 2.0.1"
 
   enabled                     = true
   namespace                   = "${var.logical_product_family}-${join("", split("-", var.region))}"
   stage                       = var.instance_env
   environment                 = var.class_env
-  name                        = "${var.resource_names_map["task_policy"].name}-${var.instance_resource}"
+  name                        = "${var.logical_product_family}-${var.logical_product_service}-${var.resource_names_map["task_policy"].name}-${var.instance_resource}"
   iam_policy_enabled          = true
   iam_source_policy_documents = local.ecs_role_custom_policy_json
+
+  tags = local.tags
+
+  #Avoids 409 concurrency issue within this module source
+  depends_on = [module.ecs_task_execution_policy]
 }
 
 module "virtual_gateway_container_definition" {
-  source = "git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git?ref=tags/0.59.0"
+  source = "git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git?ref=tags/0.61.1"
 
   container_name               = local.vgw_container.name
   container_image              = local.vgw_container.image_tag
@@ -246,7 +261,6 @@ module "virtual_gateway_container_definition" {
   map_environment              = local.vgw_container.environment
   port_mappings                = local.vgw_container.port_mappings
   log_configuration            = local.vgw_container.log_configuration
-
 }
 
 # Security Group for ECS task
@@ -289,6 +303,9 @@ module "sg_ecs_service_vgw" {
   egress_with_cidr_blocks  = coalesce(try(lookup(var.vgw_security_group, "egress_with_cidr_blocks", []), []), [])
 
   tags = merge(local.tags, { resource_name = module.resource_names["vgw_ecs_sg"].standard })
+
+  #Attempts to avoid 409 concurrency issue within this module source
+  depends_on = [module.sg_alb]
 }
 
 # ECS Service
@@ -347,18 +364,25 @@ module "virtual_gateway_ecs_service" {
   ]
 
   tags = merge(local.tags, { resource_name = module.resource_names["vgw_ecs_app"].standard })
+
+
+  #Temporary attempt to work around the following:
+  # Error: creating App Mesh Virtual Node (launch-hb-useast2-dev-000-vnode-000): BadRequestException: Service Discovery can't be set without a listener.
+  depends_on = [module.virtual_gateway, module.sds, module.virtual_gateway_container_definition, module.sg_ecs_service_vgw, module.alb]
 }
 
 # This module will provision a simple HTTP server as an ECS app used for Health Check (`/health`) for the Ingress Virtual Gateway
 module "ecs_app_heart_beat" {
-  #TODO: Update once the app has been  migrated
-  #source = "git::https://github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_app.git?ref=1.0.0"
-  source             = "git::https://github.com/nexient-llc/tf-aws-wrapper_module-ecs_appmesh_app.git?ref=0.1.0"
-  naming_prefix      = "${var.instance_env}-${var.instance_resource}-hb"
-  environment        = var.class_env
-  region             = var.region
-  environment_number = var.instance_env
-  resource_number    = var.instance_resource
+  source  = "terraform.registry.launch.nttdata.com/module_collection/ecs_appmesh_app/aws"
+  version = "~> 1.0"
+
+  logical_product_family = var.logical_product_family
+  # This is essential to keep unique IAM policy names
+  logical_product_service = "hb"
+  class_env               = var.class_env
+  region                  = var.region
+  instance_env            = var.instance_env
+  instance_resource       = var.instance_resource
 
   vpc_id               = var.vpc_id
   private_subnets      = var.private_subnets
@@ -384,5 +408,6 @@ module "ecs_app_heart_beat" {
   ignore_changes_task_definition = var.ignore_changes_task_definition
   wait_for_steady_state          = var.wait_for_steady_state
 
-  depends_on = [module.virtual_gateway_ecs_service, module.virtual_gateway]
+  # Attempts to avoid 409 concurrency issue with IAM policies
+  depends_on = [module.alb_logs_s3, module.ecs_task_policy, module.ecs_task_execution_policy, module.virtual_gateway]
 }

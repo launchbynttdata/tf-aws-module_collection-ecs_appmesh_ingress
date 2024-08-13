@@ -75,6 +75,7 @@ variable "instance_resource" {
 }
 
 variable "region" {
+  type        = string
   description = "AWS Region in which the infra needs to be provisioned"
   default     = "us-east-2"
 }
@@ -89,15 +90,15 @@ variable "resource_names_map" {
   ))
   default = {
     alb_sg = {
-      name       = "alb-sg"
+      name       = "albsg"
       max_length = 60
     }
     vgw_ecs_sg = {
-      name       = "vgw-sg"
+      name       = "vgwsg"
       max_length = 60
     }
     health_check_app_ecs_sg = {
-      name       = "hc-app-sg"
+      name       = "hcappsg"
       max_length = 60
     }
     alb = {
@@ -113,7 +114,7 @@ variable "resource_names_map" {
       max_length = 60
     }
     sds_vg = {
-      name       = "sds-vg"
+      name       = "sdsvg"
       max_length = 60
     }
     s3_logs = {
@@ -125,27 +126,27 @@ variable "resource_names_map" {
       max_length = 60
     }
     task_exec_policy = {
-      name       = "exec-plcy"
+      name       = "execplcy"
       max_length = 60
     }
     task_policy = {
-      name       = "task-plcy"
+      name       = "taskplcy"
       max_length = 60
     }
     vgw_ecs_app = {
-      name       = "vgw-svc"
+      name       = "vgwsvc"
       max_length = 60
     }
     health_check_ecs_app = {
-      name       = "hc-svc"
+      name       = "hcsvc"
       max_length = 60
     }
     vgw_ecs_td = {
-      name       = "vgw-td"
+      name       = "vgwtd"
       max_length = 60
     }
     health_check_ecs_td = {
-      name       = "hc-td"
+      name       = "hctd"
       max_length = 60
     }
   }
@@ -160,12 +161,6 @@ variable "vpc_id" {
 variable "private_subnets" {
   description = "List of private subnets"
   type        = list(string)
-}
-
-variable "public_subnets" {
-  description = "List of public subnets"
-  type        = list(string)
-  default     = []
 }
 
 variable "vgw_security_group" {
@@ -252,9 +247,8 @@ variable "target_groups" {
 }
 
 variable "dns_zone_id" {
-  description = "Zone ID of the hosted zonee"
+  description = "Zone ID of the hosted zone"
   type        = string
-  default     = null
 }
 
 variable "subject_alternate_names" {
@@ -266,7 +260,10 @@ variable "subject_alternate_names" {
 variable "dns_zone_name" {
   description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true"
   type        = string
-  default     = ""
+  validation {
+    condition     = can(regex("^[_\\-\\.a-z0-9]+$", var.dns_zone_name))
+    error_message = "The variable may only contain lowercase letters, numbers, -, _, and .."
+  }
 }
 
 variable "private_zone" {
@@ -386,9 +383,10 @@ variable "ecs_role_custom_policy_json" {
 }
 
 variable "envoy_proxy_image" {
+  // See https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html for latest version
   description = <<EOT
     Optional docker image of the envoy proxy in the format `<docker_image>:<tag>`
-    Default is `840364872350.dkr.ecr.us-east-2.amazonaws.com/aws-appmesh-envoy:v1.25.4.0-prod`
+    Default is `840364872350.dkr.ecr.us-east-2.amazonaws.com/aws-appmesh-envoy:v1.29.6.0-prod`
   EOT
   type        = string
   default     = ""
@@ -425,11 +423,13 @@ variable "ignore_changes_desired_count" {
 }
 
 variable "task_cpu" {
+  type        = number
   description = "Amount of CPU to be allocated to the task"
   default     = 512
 }
 
 variable "task_memory" {
+  type        = number
   description = "Amount of Memory to be allocated to the task"
   default     = 1024
 }
@@ -483,11 +483,13 @@ variable "force_new_deployment" {
 
 ## health check application related variables
 variable "app_task_cpu" {
+  type        = number
   description = "Amount of CPU to be allocated to the health check app task"
   default     = 512
 }
 
 variable "app_task_memory" {
+  type        = number
   description = "Amount of Memory to be allocated to the health check app task"
   default     = 1024
 }

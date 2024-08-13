@@ -30,15 +30,17 @@ module "vpc" {
 }
 
 module "ecs_platform" {
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_platform.git?ref=1.0.0"
-
-  vpc_id          = module.vpc.vpc_id
-  private_subnets = module.vpc.private_subnets
-  # Need to inject route_table_ids for gateway endpoints
+  source                  = "terraform.registry.launch.nttdata.com/module_collection/ecs_appmesh_platform/aws"
+  version                 = "~> 1.0"
+  vpc_id                  = module.vpc.vpc_id
+  private_subnets         = module.vpc.private_subnets
   gateway_vpc_endpoints   = var.gateway_vpc_endpoints
   interface_vpc_endpoints = var.interface_vpc_endpoints
-  route_table_ids         = concat([module.vpc.default_route_table_id], module.vpc.private_route_table_ids)
+  # Need to inject route_table_ids for gateway endpoints
+  route_table_ids = concat([module.vpc.default_route_table_id], module.vpc.private_route_table_ids)
 
+  logical_product_family     = var.logical_product_family
+  logical_product_service    = var.logical_product_service
   vpce_security_group        = var.vpce_security_group
   region                     = var.region
   environment                = var.class_env
@@ -72,8 +74,11 @@ module "ecs_ingress" {
 
   alb_sg              = var.alb_sg
   use_https_listeners = true
-  dns_zone_name       = var.dns_zone_name
-  private_zone        = var.private_zone
+
+  dns_zone_name = lower(var.dns_zone_name)
+  private_zone  = var.private_zone
+  dns_zone_id   = var.dns_zone_id
+
   target_groups = [
     {
       backend_protocol = "https"
@@ -94,7 +99,6 @@ module "ecs_ingress" {
   ignore_changes_task_definition    = false
   health_check_grace_period_seconds = var.health_check_grace_period_seconds
 
-  private_ca_arn            = var.private_ca_arn
   tls_enforce               = true
   vgw_health_check_path     = "/"
   vgw_health_check_protocol = "http"
@@ -107,6 +111,8 @@ module "ecs_ingress" {
   app_image_tag      = var.app_image_tag
   match_path_prefix  = "/health"
   app_security_group = var.app_security_group
+
+  private_ca_arn = var.private_ca_arn
 
   tags = var.tags
 

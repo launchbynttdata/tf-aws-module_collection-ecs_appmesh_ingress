@@ -43,25 +43,32 @@ locals {
     resource_name = module.resource_names["alb_tg"].standard
   } })]
 
+  alb_dns_name  = lower(module.alb.lb_dns_name)
+  dns_zone_name = lower(var.dns_zone_name)
+
   # Need to construct the alb_dns_records as a map of object (alias A record)
   alb_dns_records = {
     (module.resource_names["alb"].standard) = {
       type = "A"
+      name = local.alb_dns_name
       alias = {
-        name    = module.alb.lb_dns_name
-        zone_id = module.alb.lb_zone_id
+        zone_id                = module.alb.lb_zone_id
+        name                   = local.alb_dns_name
+        evaluate_target_health = true
       }
     }
   }
 
+
   # ACM cert doesnt allow first domain name > 64 chars. Hence, add a SAN for the standard name of ALB in-case the actual ALB name > 32 characters and a shortened name is used for ALB
   # We still would like to use the standard name in the custom A-record
-  san = module.resource_names["alb"].recommended_per_length_restriction != module.resource_names["alb"].standard ? ["${module.resource_names["alb"].standard}.${var.dns_zone_name}"] : []
+  alb_san = module.resource_names["alb"].recommended_per_length_restriction != module.resource_names["alb"].standard ? [lower("${module.resource_names["alb"].standard}.${var.dns_zone_name}")] : []
 
+  # Virtual gateway DNS records and cert
   # ACM first domain name must be < 64 characters
-  actual_domain_name  = "${module.resource_names["virtual_gateway"].standard}.${var.namespace_name}"
-  updated_domain_name = length(local.actual_domain_name) < 64 ? local.actual_domain_name : "${var.logical_product_family}-${var.logical_product_service}.${var.namespace_name}"
-  private_cert_san    = local.actual_domain_name != local.updated_domain_name ? [local.actual_domain_name] : []
+  actual_domain_name  = lower("${module.resource_names["virtual_gateway"].standard}.${var.namespace_name}")
+  updated_domain_name = length(local.actual_domain_name) < 64 ? lower(local.actual_domain_name) : lower("${var.logical_product_family}-${var.logical_product_service}.${var.namespace_name}")
+  private_cert_san    = local.actual_domain_name != local.updated_domain_name ? [lower(local.actual_domain_name)] : []
 
   # Role policies
 
@@ -72,7 +79,6 @@ locals {
   }, var.ecs_exec_role_managed_policy_arns)
 
   task_role_default_managed_policies_map = merge({
-    #TODO: These may not be required for task_role
     envoy_access         = "arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess"
     ecs_task_exec        = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
     envoy_preview_access = "arn:aws:iam::aws:policy/AWSAppMeshPreviewEnvoyAccess"
@@ -116,8 +122,9 @@ EOF
 
   # Virtual Gateway task definition always contains 1 container (envoy proxy)
   vgw_container = {
-    name      = "envoy"
-    image_tag = length(var.envoy_proxy_image) > 0 ? var.envoy_proxy_image : "public.ecr.aws/appmesh/aws-appmesh-envoy:v1.25.4.0-prod"
+    name = "envoy"
+    # See README.md or https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html for latest version
+    image_tag = length(var.envoy_proxy_image) > 0 ? var.envoy_proxy_image : "public.ecr.aws/appmesh/aws-appmesh-envoy:v1.29.6.0-prod"
     log_configuration = {
       logDriver = "awslogs"
       options = {
