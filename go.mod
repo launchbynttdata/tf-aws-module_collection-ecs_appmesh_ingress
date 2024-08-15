@@ -1,4 +1,4 @@
-module github.com/launchbynttdata/tf-aws-module-ecs_appmesh_ingress
+module github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_ingress
 
 go 1.21.7
 
@@ -12,7 +12,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/servicediscovery v1.31.3
 	github.com/gruntwork-io/terratest v0.47.0
 	github.com/launchbynttdata/lcaf-component-terratest v1.0.4
-	github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_ingress/tests/testimpl v0.0.0-20240813192443-1125bc85747f
 	github.com/stretchr/testify v1.9.0
 )
 
