@@ -1,12 +1,18 @@
-module github.com/launchbynttdata/tf-aws-module-ecs_appmesh_ingress
+module github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_ingress
 
 go 1.21.7
 
-replace github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_ingress/tests/testimpl => ./tests/testimpl
-
 require (
+	github.com/aws/aws-sdk-go-v2 v1.30.3
+	github.com/aws/aws-sdk-go-v2/config v1.27.27
+	github.com/aws/aws-sdk-go-v2/service/acm v1.22.7
+	github.com/aws/aws-sdk-go-v2/service/appmesh v1.27.3
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.174.0
+	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.34.0
+	github.com/aws/aws-sdk-go-v2/service/servicediscovery v1.31.3
+	github.com/gruntwork-io/terratest v0.47.0
 	github.com/launchbynttdata/lcaf-component-terratest v1.0.4
-	github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_ingress/tests/testimpl v0.0.0-00010101000000-000000000000
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
@@ -18,20 +24,13 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.44.122 // indirect
-	github.com/aws/aws-sdk-go-v2 v1.30.3 // indirect
-	github.com/aws/aws-sdk-go-v2/config v1.27.27 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.27 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.11 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.15 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.15 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/acm v1.22.7 // indirect
-	github.com/aws/aws-sdk-go-v2/service/appmesh v1.27.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.174.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.34.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.11.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.17 // indirect
-	github.com/aws/aws-sdk-go-v2/service/servicediscovery v1.31.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.22.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.26.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.30.3 // indirect
@@ -57,7 +56,6 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.7.1 // indirect
 	github.com/gruntwork-io/go-commons v0.8.0 // indirect
-	github.com/gruntwork-io/terratest v0.47.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-getter v1.7.5 // indirect
@@ -85,7 +83,6 @@ require (
 	github.com/pquerna/otp v1.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/tmccombs/hcl2json v0.3.3 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/urfave/cli v1.22.2 // indirect
