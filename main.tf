@@ -316,7 +316,7 @@ module "virtual_gateway_ecs_service" {
   version = "~> 0.67.1"
 
   # This module generates its own name. Can't use the labels module
-  namespace                          = "${var.logical_product_family}-${join("", split("-", var.region))}"
+  namespace                          = "${var.logical_product_family}-${var.logical_product_service}-${join("", split("-", var.region))}"
   stage                              = format("%03d", var.instance_env)
   environment                        = var.class_env
   name                               = var.resource_names_map["vgw_ecs_app"].name
@@ -365,7 +365,6 @@ module "virtual_gateway_ecs_service" {
 
   tags = merge(local.tags, { resource_name = module.resource_names["vgw_ecs_app"].standard })
 
-
   #Temporary attempt to work around the following:
   # Error: creating App Mesh Virtual Node (launch-hb-useast2-dev-000-vnode-000): BadRequestException: Service Discovery can't be set without a listener.
   depends_on = [module.virtual_gateway, module.sds, module.virtual_gateway_container_definition, module.sg_ecs_service_vgw, module.alb]
@@ -398,8 +397,9 @@ module "ecs_app_heart_beat" {
   app_environment    = var.app_environment
   ecs_security_group = var.app_security_group
 
-  # should be same has ALB TG health check path
+  # should be same as ALB TG health check path
   match_path_prefix = var.match_path_prefix
+  tls_enforce       = var.tls_enforce
 
   task_cpu                       = var.app_task_cpu
   task_memory                    = var.app_task_memory

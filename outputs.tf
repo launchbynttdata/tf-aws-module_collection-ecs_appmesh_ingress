@@ -21,7 +21,6 @@ output "app_sg_id" {
   description = "The ID of the VPC Endpoint Security Group"
   value       = module.ecs_app_heart_beat.ecs_sg_id
 }
-
 ## ALB related outputs
 
 output "alb_dns" {
@@ -30,12 +29,12 @@ output "alb_dns" {
 }
 
 output "alb_arn" {
-  description = "The ID and ARN of the application load balancer we created"
+  description = "The ID and ARN of the application load balancer created by the module"
   value       = try(module.alb.lb_arn, module.alb.lb_id)
 }
 
 output "alb_id" {
-  description = "The ID and ARN of the application load balancer we created"
+  description = "The ID and ARN of the application load balancer created by the module"
   value       = try(module.alb.lb_id, module.alb.lb_arn)
 }
 
@@ -45,7 +44,7 @@ output "alb_sg_id" {
 }
 
 output "alb_https_listener_arns" {
-  description = "ARNs of the HTTPs Listeners attached to the ALB"
+  description = "ARNs of the HTTPS Listeners attached to the ALB"
   value       = try(module.alb.https_listener_arns, "")
 }
 
@@ -57,7 +56,7 @@ output "alb_http_listener_arns" {
 ## DNS and Certs
 
 output "dns_zone_id" {
-  description = "Zone ID of the hosted zone for ALB records."
+  description = "Zone ID of the hosted zone for ALB records provided as input."
   value       = try(data.aws_route53_zone.dns_zone[0].zone_id, "")
 }
 output "dns_zone_name" {
