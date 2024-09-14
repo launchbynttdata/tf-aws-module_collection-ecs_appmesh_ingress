@@ -174,11 +174,6 @@ variable "alb_sg" {
   })
 }
 
-variable "dns_zone_id" {
-  description = "Zone ID of the hosted DNS zone"
-  type        = string
-}
-
 variable "dns_zone_name" {
   description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true"
   type        = string

@@ -43,17 +43,14 @@ locals {
     resource_name = module.resource_names["alb_tg"].standard
   } })]
 
-  alb_dns_name  = lower(module.alb.lb_dns_name)
-  dns_zone_name = lower(var.dns_zone_name)
-
   # Need to construct the alb_dns_records as a map of object (alias A record)
   alb_dns_records = {
     (module.resource_names["alb"].standard) = {
       type = "A"
-      name = local.alb_dns_name
+      name = module.resource_names["alb"].standard
       alias = {
         zone_id                = module.alb.lb_zone_id
-        name                   = local.alb_dns_name
+        name                   = module.alb.lb_dns_name
         evaluate_target_health = true
       }
     }
@@ -124,7 +121,8 @@ EOF
   vgw_container = {
     name = "envoy"
     # See README.md or https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html for latest version
-    image_tag = length(var.envoy_proxy_image) > 0 ? var.envoy_proxy_image : "public.ecr.aws/appmesh/aws-appmesh-envoy:v1.29.6.0-prod"
+    # For private ECS, would need private endpoint for ECR to pull the image
+    image_tag = length(var.envoy_proxy_image) > 0 ? var.envoy_proxy_image : "840364872350.dkr.ecr.${var.region}.amazonaws.com/aws-appmesh-envoy:v1.29.6.1-prod"
     log_configuration = {
       logDriver = "awslogs"
       options = {

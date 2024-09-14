@@ -61,8 +61,6 @@ alb_sg = {
   egress_cidr_blocks = ["0.0.0.0/0"]
 }
 
-# dns_zone_id and dns_zone_id must refer to the same zone
-dns_zone_id = "Z0784995304VEG2Z7RSRF"
 # dns_zone_name should be tied to a real domain known to Route 53
 dns_zone_name = "sandbox.launch.nttdata.com"
 private_zone  = false

@@ -26,7 +26,7 @@ output "app_sg_id" {
 
 output "alb_dns" {
   description = "AWS provided DNS record of the ALB"
-  value       = local.alb_dns_name
+  value       = module.alb.lb_dns_name
 }
 
 output "alb_arn" {
@@ -57,20 +57,26 @@ output "alb_http_listener_arns" {
 ## DNS and Certs
 
 output "dns_zone_id" {
-  description = "Zone ID of the hosted zone"
-  value       = try(module.alb_dns_records[0].alias.zone_id, "")
+  description = "Zone ID of the hosted zone for ALB records."
+  value       = try(data.aws_route53_zone.dns_zone[0].zone_id, "")
 }
 output "dns_zone_name" {
   description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true"
-  value       = try(local.dns_zone_name, "")
+  value       = try(var.dns_zone_name, "")
 }
 output "alb_dns_records" {
   description = "Custom DNS record for the ALB"
-  value       = try(module.alb_dns_records[0].alias.name, "")
+  value       = try([for key, value in module.alb_dns_records[0].record_fqdns : value], [])
 }
+
+output "alb_additional_dns_names" {
+  description = "Additional DNS records for the ALB"
+  value       = flatten([for dns_record in module.additional_cnames : [for key, value in dns_record.record_fqdns : key]])
+}
+
 output "private_ca_arn" {
   description = "ARN of the Private CA. This is used to sign private certificates used in App Mesh. Required when TLS is enabled in App Mesh"
-  value       = try(module.private_certs.private_ca_arn, "")
+  value       = var.private_ca_arn
 }
 
 output "alb_cert_arn" {
@@ -115,7 +121,7 @@ output "namespace_id" {
 
 output "namespace_name" {
   description = "Name of the Cloud Map namespace to be used for Service Discovery"
-  value       = try(module.ecs_app_heart_beat.namespace_name, "")
+  value       = var.namespace_name
 }
 
 output "heartbeat_app_task_definition_name" {
