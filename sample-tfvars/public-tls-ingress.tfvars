@@ -84,8 +84,7 @@ idle_timeout = 300
 # To pull public image, NAT gateway must be configured and associated with private subnets
 app_image_tag = "<app-image-in-ecr>"
 app_environment = {
-  # This value is image specific. Required for this image for the container to listen on port 8080 rather than default 80
-  PORT = 8080
+
 }
 # The health endpoint is reachable at https://<alb-url>/health
 match_path_prefix = "/health"

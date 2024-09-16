@@ -58,8 +58,8 @@ Below are some important considerations for the App Mesh Ingress configuration o
 
 
 ## Usage
-A sample variable file `example.tfvars` is available in the root directory which can be used to test this module. User needs to follow the below steps to execute this module
-1. Update the `example.tfvars` to manually enter values for all fields marked within `<>` to make the variable file usable
+Several sample variable files [tfvars](./sample-tfvars) are available in the root directory which can be used to test this module. User needs to follow the below steps to execute this module
+1. Update the `tfvars` file to manually enter values for all fields marked within `<>` to make the variable file usable
 2. Create a file `provider.tf` with the below contents
    ```
     provider "aws" {
@@ -78,10 +78,14 @@ A sample variable file `example.tfvars` is available in the root directory which
     # Apply (this is create the actual infrastructure)
     terraform apply -var-file example.tfvars -auto-approve
    ```
-## Known Issues
+## Known Issues and Guidelines
+
 1. The ALB is currently set to only work with TLS listener in this module. Unable to make it work for both HTTP and TLS listener in if/else. The parent module is not supporting
-
-
+2. If `tls_enforce=true` in this module, then ensure that any applications deployed to this cluster that uses this ingress must also have `tls_enforce=true`, else those modules will fail to talk to the ingress
+3. Sometimes the `terraform destroy` is unable to destroy all resources and fails with error shown below. But, this is mitigated by running `terraform destroy` again.
+```shell
+│ Error: deleting App Mesh Virtual Router (a0602f30-46ea-49ce-b545-a9255087d0dd): operation error App Mesh: DeleteVirtualRouter, https response error StatusCode: 409, RequestID: 0f756a18-5adc-43a4-9622-7590885de530, ResourceInUseException: VirtualRouter with name xxxx cannot be deleted because it is a VirtualService provider
+```
 ## Pre-Commit hooks
 
 [.pre-commit-config.yaml](.pre-commit-config.yaml) file defines certain `pre-commit` hooks that are relevant to terraform, golang and common linting tasks. There are no custom hooks added.
@@ -249,7 +253,7 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="input_alb_logs_bucket_prefix"></a> [alb\_logs\_bucket\_prefix](#input\_alb\_logs\_bucket\_prefix) | S3 bucket prefix for ALB logs | `string` | `null` | no |
 | <a name="input_use_https_listeners"></a> [use\_https\_listeners](#input\_use\_https\_listeners) | Whether to enable HTTPs in the ALB | `bool` | `true` | no |
 | <a name="input_listener_ssl_policy_default"></a> [listener\_ssl\_policy\_default](#input\_listener\_ssl\_policy\_default) | The security policy if using HTTPS externally on the load balancer.<br>    [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html). | `string` | `"ELBSecurityPolicy-TLS13-1-2-2021-06"` | no |
-| <a name="input_private_ca_arn"></a> [private\_ca\_arn](#input\_private\_ca\_arn) | ARN of the Private CA. This is used to sign private certificates used in App Mesh. Required when TLS is enabled in App Mesh | `string` | `""` | no |
+| <a name="input_private_ca_arn"></a> [private\_ca\_arn](#input\_private\_ca\_arn) | ARN of the Private CA. This is used to sign private certificates used in App Mesh. Required when tls\_enforce=true | `string` | `""` | no |
 | <a name="input_tls_enforce"></a> [tls\_enforce](#input\_tls\_enforce) | Whether to enforce TLS in App Mesh Virtual Gateway and services | `bool` | `true` | no |
 | <a name="input_vgw_logs_text_format"></a> [vgw\_logs\_text\_format](#input\_vgw\_logs\_text\_format) | The text format. | `string` | `null` | no |
 | <a name="input_vgw_tls_mode"></a> [vgw\_tls\_mode](#input\_vgw\_tls\_mode) | The mode for the listener’s Transport Layer Security (TLS) configuration. Must be one of DISABLED, PERMISSIVE, STRICT. | `string` | `"DISABLED"` | no |

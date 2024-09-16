@@ -274,11 +274,6 @@ variable "target_groups" {
   }))
 }
 
-#variable "dns_zone_id" {
-#  description = "(Required) Zone ID of the hosted zone where records for LB will be created"
-#  type        = string
-#}
-
 variable "subject_alternate_names" {
   description = "Additional domain names to be added to the certificate created for ALB. Domain names must be FQDN."
   type        = list(string)
@@ -350,7 +345,7 @@ variable "listener_ssl_policy_default" {
 
 ## App Mesh related variables
 variable "private_ca_arn" {
-  description = "ARN of the Private CA. This is used to sign private certificates used in App Mesh. Required when TLS is enabled in App Mesh"
+  description = "ARN of the Private CA. This is used to sign private certificates used in App Mesh. Required when tls_enforce=true"
   type        = string
   default     = ""
 }

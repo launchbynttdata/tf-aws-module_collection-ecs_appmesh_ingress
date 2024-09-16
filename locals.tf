@@ -121,7 +121,8 @@ EOF
   vgw_container = {
     name = "envoy"
     # See README.md or https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html for latest version
-    # For private ECS, would need private endpoint for ECR to pull the image
+    # Private ECS instance would need private endpoint for ECR to pull the image
+    # The default envoy-proxy docker image provided below is regional image provided by AWS ECR and can be pulled privately without NAT gateway.
     image_tag = length(var.envoy_proxy_image) > 0 ? var.envoy_proxy_image : "840364872350.dkr.ecr.${var.region}.amazonaws.com/aws-appmesh-envoy:v1.29.6.1-prod"
     log_configuration = {
       logDriver = "awslogs"
