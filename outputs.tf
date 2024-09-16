@@ -84,8 +84,8 @@ output "alb_cert_arn" {
 }
 
 output "virtual_gateway_cert_arn" {
-  description = "ARN of the certificate provisioned for the virtual gateway"
-  value       = try(module.private_certs.certificate_arn, "")
+  description = "ARN of the certificate provisioned for the virtual gateway when var.tls_enforce is true"
+  value       = try(module.private_certs[0].certificate_arn, "")
 }
 
 output "virtual_gateway_arn" {

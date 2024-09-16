@@ -179,8 +179,9 @@ module "private_certs" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws"
   version = "~> 1.0"
 
-  private_ca_arn = var.private_ca_arn
+  count = var.tls_enforce ? 1 : 0
 
+  private_ca_arn            = var.private_ca_arn
   domain_name               = local.updated_domain_name
   subject_alternative_names = local.private_cert_san
 
@@ -204,7 +205,7 @@ module "virtual_gateway" {
   tls_mode                             = var.vgw_tls_mode
   tls_ports                            = var.vgw_tls_ports
   text_format                          = var.vgw_logs_text_format
-  acm_certificate_arn                  = module.private_certs.certificate_arn
+  acm_certificate_arn                  = var.tls_enforce ? module.private_certs[0].certificate_arn : null
   trust_acm_certificate_authority_arns = [var.private_ca_arn]
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })

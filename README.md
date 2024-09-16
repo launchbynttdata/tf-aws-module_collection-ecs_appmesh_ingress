@@ -304,7 +304,7 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="output_alb_additional_dns_names"></a> [alb\_additional\_dns\_names](#output\_alb\_additional\_dns\_names) | Additional DNS records for the ALB |
 | <a name="output_private_ca_arn"></a> [private\_ca\_arn](#output\_private\_ca\_arn) | ARN of the Private CA. This is used to sign private certificates used in App Mesh. Required when TLS is enabled in App Mesh |
 | <a name="output_alb_cert_arn"></a> [alb\_cert\_arn](#output\_alb\_cert\_arn) | ARN of the certificate provisioned for ALB by ACM |
-| <a name="output_virtual_gateway_cert_arn"></a> [virtual\_gateway\_cert\_arn](#output\_virtual\_gateway\_cert\_arn) | ARN of the certificate provisioned for the virtual gateway |
+| <a name="output_virtual_gateway_cert_arn"></a> [virtual\_gateway\_cert\_arn](#output\_virtual\_gateway\_cert\_arn) | ARN of the certificate provisioned for the virtual gateway when var.tls\_enforce is true |
 | <a name="output_virtual_gateway_arn"></a> [virtual\_gateway\_arn](#output\_virtual\_gateway\_arn) | ARN of the Virtual Gateway |
 | <a name="output_virtual_gateway_task_definition_name"></a> [virtual\_gateway\_task\_definition\_name](#output\_virtual\_gateway\_task\_definition\_name) | Revision of the Virtual Gateway ECS app task definition. |
 | <a name="output_virtual_gateway_task_definition_version"></a> [virtual\_gateway\_task\_definition\_version](#output\_virtual\_gateway\_task\_definition\_version) | Revision of the Virtual Gateway ECS app task definition. |
