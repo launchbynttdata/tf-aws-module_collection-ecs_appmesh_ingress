@@ -77,7 +77,6 @@ module "ecs_ingress" {
 
   dns_zone_name = lower(var.dns_zone_name)
   private_zone  = var.private_zone
-  dns_zone_id   = var.dns_zone_id
 
   target_groups = [
     {

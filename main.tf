@@ -12,7 +12,7 @@
 
 module "resource_names" {
   source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   for_each = var.resource_names_map
 
@@ -80,7 +80,8 @@ module "alb" {
   idle_timeout          = var.idle_timeout
 
   vpc_id          = var.vpc_id
-  subnets         = var.private_subnets
+  subnets         = var.is_internal ? (length(var.subnet_mapping) > 0 ? null : var.private_subnets) : (length(var.subnet_mapping) > 0 ? null : var.public_subnets)
+  subnet_mapping  = var.subnet_mapping
   security_groups = [module.sg_alb.security_group_id]
 
   access_logs = {
@@ -127,21 +128,22 @@ module "alb" {
   depends_on = [module.alb_logs_s3]
 }
 
-
-module "alb_dns_records" {
-  source  = "terraform.registry.launch.nttdata.com/module_primitive/dns_record/aws"
-  version = "~> 1.0"
-
-  zone_id = var.dns_zone_id
-  records = local.alb_dns_records
-}
-
 # DNS Zone where the records for the ALB will be created
 data "aws_route53_zone" "dns_zone" {
   count = length(var.dns_zone_name) > 0 || var.use_https_listeners ? 1 : 0
 
   name         = var.dns_zone_name
   private_zone = var.private_zone
+}
+
+module "alb_dns_records" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/dns_record/aws"
+  version = "~> 1.0"
+
+  count = var.use_https_listeners ? 1 : 0
+
+  zone_id = data.aws_route53_zone.dns_zone[0].zone_id
+  records = local.alb_dns_records
 }
 
 # Certificate Manager (not a private CA) where the certs for ALB will be provisioned
@@ -152,7 +154,7 @@ module "acm" {
   count = var.use_https_listeners ? 1 : 0
 
   domain_name               = lower("${module.resource_names["alb"].recommended_per_length_restriction}.${var.dns_zone_name}")
-  subject_alternative_names = flatten(concat(local.alb_san, var.subject_alternate_names))
+  subject_alternative_names = flatten(concat(local.alb_san, var.subject_alternate_names, var.additional_cnames))
   zone_id                   = data.aws_route53_zone.dns_zone[count.index].zone_id
 
   tags = merge(local.tags, { resource_name = module.resource_names["acm"].standard })
@@ -177,8 +179,9 @@ module "private_certs" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws"
   version = "~> 1.0"
 
-  private_ca_arn = var.private_ca_arn
+  count = var.tls_enforce ? 1 : 0
 
+  private_ca_arn            = var.private_ca_arn
   domain_name               = local.updated_domain_name
   subject_alternative_names = local.private_cert_san
 
@@ -202,7 +205,7 @@ module "virtual_gateway" {
   tls_mode                             = var.vgw_tls_mode
   tls_ports                            = var.vgw_tls_ports
   text_format                          = var.vgw_logs_text_format
-  acm_certificate_arn                  = module.private_certs.certificate_arn
+  acm_certificate_arn                  = var.tls_enforce ? module.private_certs[0].certificate_arn : null
   trust_acm_certificate_authority_arns = [var.private_ca_arn]
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
@@ -314,16 +317,15 @@ module "virtual_gateway_ecs_service" {
   version = "~> 0.67.1"
 
   # This module generates its own name. Can't use the labels module
-  namespace                          = "${var.instance_env}-${join("", split("-", var.region))}"
-  stage                              = var.instance_env
+  namespace                          = "${var.logical_product_family}-${var.logical_product_service}-${join("", split("-", var.region))}"
+  stage                              = format("%03d", var.instance_env)
   environment                        = var.class_env
   name                               = var.resource_names_map["vgw_ecs_app"].name
-  attributes                         = [var.instance_resource]
+  attributes                         = [format("%03d", var.instance_resource)]
   delimiter                          = "-"
   alb_security_group                 = module.sg_alb.security_group_id
   container_definition_json          = module.virtual_gateway_container_definition.json_map_encoded_list
   ecs_cluster_arn                    = var.ecs_cluster_arn
-  launch_type                        = var.ecs_launch_type
   vpc_id                             = var.vpc_id
   security_group_ids                 = [module.sg_ecs_service_vgw.security_group_id]
   security_group_enabled             = false
@@ -332,7 +334,6 @@ module "virtual_gateway_ecs_service" {
   ignore_changes_desired_count       = var.ignore_changes_desired_count
   task_exec_policy_arns_map          = local.task_exec_policy_arns_map
   task_policy_arns_map               = local.task_policy_arns_map
-  network_mode                       = var.network_mode
   assign_public_ip                   = var.assign_public_ip
   health_check_grace_period_seconds  = var.health_check_grace_period_seconds
   deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
@@ -365,7 +366,6 @@ module "virtual_gateway_ecs_service" {
 
   tags = merge(local.tags, { resource_name = module.resource_names["vgw_ecs_app"].standard })
 
-
   #Temporary attempt to work around the following:
   # Error: creating App Mesh Virtual Node (launch-hb-useast2-dev-000-vnode-000): BadRequestException: Service Discovery can't be set without a listener.
   depends_on = [module.virtual_gateway, module.sds, module.virtual_gateway_container_definition, module.sg_ecs_service_vgw, module.alb]
@@ -395,10 +395,12 @@ module "ecs_app_heart_beat" {
   ecs_cluster_arn    = var.ecs_cluster_arn
   app_image_tag      = var.app_image_tag
   app_ports          = [var.app_port]
+  app_environment    = var.app_environment
   ecs_security_group = var.app_security_group
 
-  # should be same has ALB TG health check path
+  # should be same as ALB TG health check path
   match_path_prefix = var.match_path_prefix
+  tls_enforce       = var.tls_enforce
 
   task_cpu                       = var.app_task_cpu
   task_memory                    = var.app_task_memory
@@ -410,4 +412,21 @@ module "ecs_app_heart_beat" {
 
   # Attempts to avoid 409 concurrency issue with IAM policies
   depends_on = [module.alb_logs_s3, module.ecs_task_policy, module.ecs_task_execution_policy, module.virtual_gateway]
+}
+
+module "additional_cnames" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/dns_record/aws"
+  version = "~> 1.0"
+
+  for_each = length(var.dns_zone_name) > 0 && length(var.additional_cnames) > 0 ? toset(var.additional_cnames) : []
+
+  zone_id = data.aws_route53_zone.dns_zone[0].zone_id
+  records = {
+    (each.key) = {
+      name    = each.key
+      type    = "CNAME"
+      ttl     = 300
+      records = ["${module.resource_names["alb"].standard}.${var.dns_zone_name}"]
+    }
+  }
 }

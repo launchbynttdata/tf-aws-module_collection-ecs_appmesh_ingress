@@ -154,17 +154,45 @@ variable "resource_names_map" {
 
 ### VPC related variables
 variable "vpc_id" {
-  description = "The VPC ID of the VPC where infrastructure will be provisioned"
+  description = "(Required) The VPC ID of the VPC where infrastructure will be provisioned"
   type        = string
 }
 
 variable "private_subnets" {
-  description = "List of private subnets"
+  description = <<EOT
+    (Required) List of private subnets. ECS services provisioned in private subnets would need NAT gateway to access internet.
+    Internal ALBs must be provisioned in private subnets
+  EOT
   type        = list(string)
 }
 
+variable "public_subnets" {
+  description = <<EOT
+    List of public subnets. ECS services provisioned in public subnets can access internet directly. External ALBs must be
+    provisioned in public subnets
+  EOT
+  type        = list(string)
+  default     = []
+}
+
+variable "subnet_mapping" {
+  description = <<EOT
+    A list of subnet mapping blocks describing subnets to attach to network load balancer. Required if load_balancer_type=network
+    More details on the various attributes of subnet_mapping can be found at
+    https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#subnet_mapping
+    When subnet_mapping is specified the private/public subnets variable is ignored.
+  EOT
+  type        = list(map(string))
+  default     = []
+}
+
 variable "vgw_security_group" {
-  description = "Security group for the Virtual Gateway ECS application. By default, it allows traffic from ALB on the app_port"
+  description = <<EOT
+    Security group for the Virtual Gateway ECS application. By default, it allows traffic from ALB on the app_port
+
+    More details on how to set the below fields can be found at
+    https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/rules.tf
+  EOT
   type = object({
     ingress_rules            = optional(list(string))
     ingress_cidr_blocks      = optional(list(string))
@@ -181,42 +209,42 @@ variable "vgw_security_group" {
 
 ## ECS Cluster
 variable "ecs_cluster_arn" {
-  description = "ARN of the ECS Cluster where the services are to be created"
+  description = "(Required) ARN of the ECS Cluster where the ingress service will be created"
   type        = string
 }
 
 ## App Mesh
 variable "app_mesh_id" {
-  description = "ID of the App Mesh where virtual Gateway is to be created. ID and Name are the same for App Mesh"
+  description = "(Required) ID of the App Mesh where virtual Gateway is to be created. ID and Name are the same for App Mesh"
   type        = string
 }
 
 ### Cloud Map Namespace related variables
 variable "namespace_name" {
-  description = "Name of the Cloud Map namespace to be used for Service Discovery"
+  description = "(Required) Name of the Cloud Map namespace to be used for Service Discovery"
   type        = string
 }
 
 variable "namespace_id" {
-  description = "ID of the Cloud Map namespace to be used for Service Discovery"
+  description = "(Required) ID of the Cloud Map namespace to be used for Service Discovery"
   type        = string
 }
 
 ## ALB related variables
 variable "load_balancer_type" {
-  description = "The type of the load balancer. Default is 'application'"
+  description = "The type of the load balancer. Default is 'application'. Can be either application or network."
   type        = string
   default     = "application"
 }
 
 variable "is_internal" {
-  description = "Whether this load balancer is internal or public facing"
+  description = "Whether this load balancer is internal or public facing. If is_internal=false, then var.public_subnets or subnet_mapping must be specified"
   type        = bool
   default     = true
 }
 
 variable "alb_sg" {
-  description = "Security Group for the ALB. https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/rules.tf"
+  description = "(Required) Security Group for the ALB. https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/rules.tf"
   type = object({
     description              = optional(string)
     ingress_rules            = optional(list(string))
@@ -230,7 +258,7 @@ variable "alb_sg" {
 
 variable "target_groups" {
   description = <<EOT
-    List of target groups for the ALB"
+    (Required) List of target groups for the ALB"
     `target_type` can be ip, instance
     `health_check` must be set for backend_protocol=HTTPS.
     Valid health_check attributes are healthy_threshold, unhealthy_threshold, path, port, protocol
@@ -246,11 +274,6 @@ variable "target_groups" {
   }))
 }
 
-variable "dns_zone_id" {
-  description = "Zone ID of the hosted zone"
-  type        = string
-}
-
 variable "subject_alternate_names" {
   description = "Additional domain names to be added to the certificate created for ALB. Domain names must be FQDN."
   type        = list(string)
@@ -258,7 +281,13 @@ variable "subject_alternate_names" {
 }
 
 variable "dns_zone_name" {
-  description = "Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true"
+  description = <<EOT
+    Name of the Route53 DNS Zone where custom DNS records will be created. Required if use_https_listeners=true. var.private_zone
+    must also be specified if this variable is not empty.
+
+    By default, an A record will be created for the ALB with the name as generated by `module.resource_names["alb"].standard`
+    In case, additional cnames are required, they can be specified in the `additional_cnames` variable
+  EOT
   type        = string
   validation {
     condition     = can(regex("^[_\\-\\.a-z0-9]+$", var.dns_zone_name))
@@ -267,9 +296,18 @@ variable "dns_zone_name" {
 }
 
 variable "private_zone" {
-  description = "Whether the dns_zone_name provided above is a private or public hosted zone. Required if dns_zone_name is not empty"
+  description = <<EOT
+    Whether the dns_zone_name provided above is a private or public hosted zone. Required if dns_zone_name is not empty.
+    private_zone=true means the hosted zone is private and false means it is public.
+  EOT
   type        = string
   default     = ""
+}
+
+variable "additional_cnames" {
+  description = "Additional CNAME records to be created in the DNS zone pointing to the ALB. Must be FQDN in form of <cname>.<dns_zone_name>"
+  type        = list(string)
+  default     = []
 }
 
 variable "idle_timeout" {
@@ -297,14 +335,17 @@ variable "use_https_listeners" {
 }
 
 variable "listener_ssl_policy_default" {
-  description = "The security policy if using HTTPS externally on the load balancer. [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html)."
+  description = <<EOT
+    The security policy if using HTTPS externally on the load balancer.
+    [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table.html).
+  EOT
   type        = string
   default     = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 }
 
 ## App Mesh related variables
 variable "private_ca_arn" {
-  description = "ARN of the Private CA. This is used to sign private certificates used in App Mesh. Required when TLS is enabled in App Mesh"
+  description = "ARN of the Private CA. This is used to sign private certificates used in App Mesh. Required when tls_enforce=true"
   type        = string
   default     = ""
 }
@@ -390,18 +431,6 @@ variable "envoy_proxy_image" {
   EOT
   type        = string
   default     = ""
-}
-
-variable "ecs_launch_type" {
-  description = "The launch type of the ECS service. Default is FARGATE"
-  type        = string
-  default     = "FARGATE"
-}
-
-variable "network_mode" {
-  description = "The network_mode of the ECS service. Default is awsvpc"
-  type        = string
-  default     = "awsvpc"
 }
 
 variable "ignore_changes_task_definition" {
@@ -508,6 +537,12 @@ variable "app_image_tag" {
 variable "app_port" {
   description = "The port at which the health check application is running"
   type        = number
+}
+
+variable "app_environment" {
+  description = "Environment variables to be injected into the heart beat container. Sometimes helpful to set the non standard port"
+  type        = map(string)
+  default     = {}
 }
 
 variable "app_security_group" {
