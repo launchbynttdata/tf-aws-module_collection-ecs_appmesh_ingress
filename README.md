@@ -179,7 +179,7 @@ If `make check` target is successful, developer is good to commit the code to pr
 # Know Issues
 Currently, the `encrypt at transit` is not supported in terraform. There is an open issue for this logged with Hashicorp - https://github.com/hashicorp/terraform-provider-aws/pull/26987
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -191,7 +191,7 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.0 |
 
 ## Modules
 
@@ -318,4 +318,4 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="output_namespace_name"></a> [namespace\_name](#output\_namespace\_name) | Name of the Cloud Map namespace to be used for Service Discovery |
 | <a name="output_heartbeat_app_task_definition_name"></a> [heartbeat\_app\_task\_definition\_name](#output\_heartbeat\_app\_task\_definition\_name) | Task Definition Version of the HeartBeat application |
 | <a name="output_heartbeat_app_task_definition_version"></a> [heartbeat\_app\_task\_definition\_version](#output\_heartbeat\_app\_task\_definition\_version) | Task Definition Version of the HeartBeat application |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->

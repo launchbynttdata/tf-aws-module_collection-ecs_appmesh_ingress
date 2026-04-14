@@ -278,8 +278,8 @@ module "sg_ecs_service_vgw" {
   computed_ingress_with_source_security_group_id = concat([
     {
       # Allow ingress from ALB on the health check port of target group (virtual gateway listener)
-      from_port                = try(lookup(var.target_groups[0].health_check, "port"), 443)
-      to_port                  = try(lookup(var.target_groups[0].health_check, "port"), 443)
+      from_port                = try(var.target_groups[0].health_check["port"], 443)
+      to_port                  = try(var.target_groups[0].health_check["port"], 443)
       protocol                 = "tcp"
       source_security_group_id = module.sg_alb.security_group_id
     }
@@ -288,8 +288,8 @@ module "sg_ecs_service_vgw" {
   computed_egress_with_source_security_group_id = concat([
     {
       # Allow egress from ALB on the health check port of target group (virtual gateway listener)
-      from_port                = try(lookup(var.target_groups[0].health_check, "port"), 443)
-      to_port                  = try(lookup(var.target_groups[0].health_check, "port"), 443)
+      from_port                = try(var.target_groups[0].health_check["port"], 443)
+      to_port                  = try(var.target_groups[0].health_check["port"], 443)
       protocol                 = "tcp"
       source_security_group_id = module.sg_alb.security_group_id
     }
