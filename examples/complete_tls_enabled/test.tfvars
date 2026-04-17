@@ -1,5 +1,5 @@
-# Need to fill the properties within <> like dns_zone_id, private_ca_arn, dns_zone_name, private_zone, app_image_tag, app_port
-# These above variables are made required so that the user must enter those
+# Need to fill the properties within <> like dns_zone_name, private_zone, app_image_tag, app_port
+# Leave private_ca_arn empty to have the example create one automatically.
 
 interface_vpc_endpoints = {
   ecrdkr = {
@@ -68,7 +68,7 @@ private_zone  = false
 force_new_deployment              = true
 health_check_grace_period_seconds = 120
 
-private_ca_arn = "arn:aws:acm-pca:us-east-2:020127659860:certificate-authority/aae3aa9a-a2d0-42ac-a16b-0fc6d54b109c"
+private_ca_arn = ""
 
 # Virtual gateway
 

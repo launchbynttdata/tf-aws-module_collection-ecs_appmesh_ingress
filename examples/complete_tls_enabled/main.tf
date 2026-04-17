@@ -56,6 +56,35 @@ module "ecs_platform" {
   depends_on = [module.vpc]
 }
 
+module "private_ca" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/private_ca/aws"
+  version = "~> 1.0"
+
+  count = length(var.private_ca_arn) == 0 ? 1 : 0
+
+  logical_product_family  = var.logical_product_family
+  logical_product_service = var.logical_product_service
+  region                  = var.region
+  environment             = var.class_env
+  environment_number      = format("%03d", var.instance_env)
+  resource_number         = format("%03d", var.instance_resource)
+
+  key_algorithm     = "RSA_4096"
+  signing_algorithm = "SHA512WITHRSA"
+  subject = {
+    country             = "US"
+    organization        = "Launch by NTT DATA"
+    state               = "Texas"
+    organizational_unit = "DSO"
+  }
+  ca_certificate_validity = {
+    type  = "YEARS"
+    value = 10
+  }
+
+  tags = var.tags
+}
+
 module "ecs_ingress" {
   source = "../.."
 
@@ -111,9 +140,9 @@ module "ecs_ingress" {
   match_path_prefix  = "/health"
   app_security_group = var.app_security_group
 
-  private_ca_arn = var.private_ca_arn
+  private_ca_arn = length(var.private_ca_arn) > 0 ? var.private_ca_arn : module.private_ca[0].private_ca_arn
 
   tags = var.tags
 
-  depends_on = [module.ecs_platform, module.vpc]
+  depends_on = [module.ecs_platform, module.private_ca, module.vpc]
 }

@@ -145,6 +145,7 @@ variable "vpce_security_group" {
 variable "private_ca_arn" {
   description = "ARN of the Private CA. This is used to sign private certificates used in App Mesh. Required when TLS is enabled in App Mesh"
   type        = string
+  default     = ""
 }
 
 variable "vgw_security_group" {
